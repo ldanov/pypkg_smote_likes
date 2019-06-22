@@ -1,11 +1,19 @@
-from imblearn.utils import check_neighbors_object
-import numpy as np
-from sklearn.utils import safe_indexing, check_random_state
-from scipy import sparse
+#!/usr/bin/env python3
+
+"""Prototype rebuilding of imblearn.over_sampling.SMOTE"""
+
+# Authors: Lyubomir Danov <->
+# License: -
+
+
+import numpy
 from imblearn.over_sampling._smote import BaseSMOTE
+from imblearn.utils import check_neighbors_object
+from scipy import sparse
+from sklearn.utils import check_random_state, safe_indexing
 
 
-class restricted_SMOTE(BaseSMOTE):
+class protoSMOTE(BaseSMOTE):
     """Class to perform over-sampling using SMOTE.
 
     Parameters
@@ -31,7 +39,7 @@ class restricted_SMOTE(BaseSMOTE):
     """
 
     def __init__(self,
-                 sampling_strategy:dict={'class':'number'},
+                 sampling_strategy: dict = {'class': 'number'},
                  random_state=None,
                  k_neighbors=5,
                  n_jobs=1):
@@ -58,7 +66,7 @@ class restricted_SMOTE(BaseSMOTE):
         for class_sample, n_samples in self.sampling_strategy_.items():
             if n_samples == 0:
                 continue
-            target_class_indices = np.flatnonzero(y == class_sample)
+            target_class_indices = numpy.flatnonzero(y == class_sample)
             X_class = safe_indexing(X, target_class_indices)
 
             self.nn_k_.fit(X_class)
@@ -69,8 +77,8 @@ class restricted_SMOTE(BaseSMOTE):
             if sparse.issparse(X_new):
                 X_resampled = sparse.vstack([X_resampled, X_new])
             else:
-                X_resampled = np.vstack((X_resampled, X_new))
-            y_resampled = np.hstack((y_resampled, y_new))
+                X_resampled = numpy.vstack((X_resampled, X_new))
+            y_resampled = numpy.hstack((y_resampled, y_new))
 
         return X_resampled, y_resampled
 
@@ -123,10 +131,10 @@ class restricted_SMOTE(BaseSMOTE):
         samples_indices = random_state.randint(
             low=0, high=len(nn_num.flatten()), size=n_samples)
         steps = step_size * random_state.uniform(size=n_samples)
-        rows = np.floor_divide(samples_indices, nn_num.shape[1])
-        cols = np.mod(samples_indices, nn_num.shape[1])
+        rows = numpy.floor_divide(samples_indices, nn_num.shape[1])
+        cols = numpy.mod(samples_indices, nn_num.shape[1])
 
-        y_new = np.array([y_type] * len(samples_indices), dtype=y_dtype)
+        y_new = numpy.array([y_type] * len(samples_indices), dtype=y_dtype)
 
         if sparse.issparse(X):
             row_indices, col_indices, samples = [], [], []
@@ -142,10 +150,9 @@ class restricted_SMOTE(BaseSMOTE):
                                       dtype=X.dtype),
                     y_new)
         else:
-            X_new = np.zeros((n_samples, X.shape[1]), dtype=X.dtype)
-            for i, (row, col, step) in enumerate(zip(rows, cols, steps)):
-                X_new[i] = self._generate_sample(X, nn_data, nn_num,
-                                                 row, col, step)
+            X_new = numpy.zeros((n_samples, X.shape[1]), dtype=X.dtype)
+            X_new = self._generate_sample(X, nn_data, nn_num,
+                                          rows, cols, steps[:, None])
             return X_new, y_new
 
     def _generate_sample(self, X, nn_data, nn_num, row, col, step):
