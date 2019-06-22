@@ -31,9 +31,10 @@ r"""HVDM distance metric
 import numpy
 from .nvdm2 import normalized_vdm_2
 from sklearn.metrics import pairwise_distances
+from sklearn.neighbors import DistanceMetric
 
 
-def split_arrays(arr, ind_cat_cols):
+def _split_arrays(arr, ind_cat_cols):
     ind_num_cols = [i for i in range(arr.shape[1]) if i not in ind_cat_cols]
 
     arr_cat = arr[:, ind_cat_cols]
@@ -42,15 +43,16 @@ def split_arrays(arr, ind_cat_cols):
     return arr_num, arr_cat
 
 
-def hvdm(x: numpy.ndarray, target, ind_cat_cols: list = []):
+def hvdm(X: numpy.ndarray, target, ind_cat_cols: list = []):
     '''
     Computes HVDM with normalized_vdm2 for categorical data
     Currently does not set distance for missing values to 0
+    Currently is only one target is given, all categorical distances are 0
     '''
     # if y is None:
     only_x = True
 
-    x_num, x_cat = split_arrays(x, ind_cat_cols)
+    x_num, x_cat = _split_arrays(X, ind_cat_cols)
     x_num_sd = numpy.std(x_num, axis=0, keepdims=True)
     x_num_normalzied = numpy.divide(x_num, (4*x_num_sd))
 
