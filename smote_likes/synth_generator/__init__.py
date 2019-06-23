@@ -1,5 +1,9 @@
-from .proto import restricted_SMOTE
+from .proto import protoSMOTE
+from .restricted1 import restrictedSMOTE1
+from .restricted2 import restrictedSMOTE2
 
 __all__ = [
-    'restricted_SMOTE'
+    'protoSMOTE',
+    'restrictedSMOTE1',
+    'restrictedSMOTE2'
 ]
