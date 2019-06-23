@@ -8,7 +8,6 @@
 # License: -
 
 
-from sklearn.utils import safe_indexing
 import numpy
 from scipy import stats
 
@@ -29,7 +28,7 @@ class NearestReferenceFeatures(object):
         X_bigger = self._closest_nonclass(X_interest, X_reference, 'bigger')
         X_smaller = self._closest_nonclass(X_interest, X_reference, 'smaller')
 
-        return {'bigger': X_bigger, 'smaller': X_smaller}
+        return (X_bigger, X_smaller)
 
     def _closest_nonclass(self, X_interest, X_reference, comparison_type):
 
