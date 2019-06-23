@@ -51,14 +51,12 @@ class protoSMOTE(BaseSMOTE):
                          n_jobs=n_jobs, ratio=None)
         self.n_jobs = n_jobs
 
-    # FIXME: to be removed in 0.6
     def _fit_resample(self, X, y):
+
         self._validate_estimator()
         return self._sample(X, y)
 
     def _sample(self, X, y):
-        # FIXME: uncomment in version 0.6
-        # self._validate_estimator()
 
         X_resampled = X.copy()
         y_resampled = y.copy()
