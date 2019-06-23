@@ -18,9 +18,19 @@ class protoSMOTE(BaseSMOTE):
 
     Parameters
     ----------
-    {sampling_strategy}
+    sampling_strategy: dict
+        The key gives the class to be over-sampled, while the value
+        gives how many synthetic observations to be generated.
 
-    {random_state}
+    random_state : int, RandomState instance or None, optional (default=None)
+        Control the randomization of the algorithm.
+
+        - If int, ``random_state`` is the seed used by the random number
+          generator;
+        - If ``RandomState`` instance, random_state is the random number
+          generator;
+        - If ``None``, the random number generator is the ``RandomState``
+          instance used by ``np.random``.
 
     k_neighbors : int or object, optional (default=5)
         If ``int``, number of nearest neighbours to used to construct synthetic

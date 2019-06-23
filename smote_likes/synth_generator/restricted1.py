@@ -20,7 +20,7 @@ class restrictedSMOTE1(BaseOverSampler):
 
     Parameters
     ----------
-    sampling_strategy: dict 
+    sampling_strategy : dict
         The key gives the class to be over-sampled, while the value
         gives how many synthetic observations to be generated.
 
@@ -28,7 +28,7 @@ class restrictedSMOTE1(BaseOverSampler):
         Which parameters to use when sampling from numpy.random.beta
         for bigger samples. For smaller samples the parameters are reversed.
 
-    bigger_samples: dict or None
+    bigger_samples : dict or None
         The key gives the class to be over-sampled, while the value
         gives how many synthetic observations will be generated bigger.
         If None, the numbers will be randomly sampled.
@@ -45,8 +45,6 @@ class restrictedSMOTE1(BaseOverSampler):
 
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
-
-
 
     """
     _required_beta_keys = ['a', 'b']
@@ -136,8 +134,6 @@ class restrictedSMOTE1(BaseOverSampler):
         X : {array-like, sparse matrix}, shape (n_samples, n_features)
             Points from which the points will be created.
 
-
-
         nn_data : ndarray, shape (n_samples_all, n_features)
             Data set carrying all the neighbours to be used
 
@@ -154,9 +150,6 @@ class restrictedSMOTE1(BaseOverSampler):
         -------
         X_new : {ndarray, sparse matrix}, shape (n_samples_new, n_features)
             Synthetically generated samples.
-
-        y_new : ndarray, shape (n_samples_new,)
-            Target values for synthetic samples.
 
         """
         beta_a = self.beta_params['a_' + beta_sampling]

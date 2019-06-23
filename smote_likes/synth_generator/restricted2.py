@@ -19,7 +19,7 @@ class restrictedSMOTE2(BaseOverSampler):
 
     Parameters
     ----------
-    sampling_strategy: dict 
+    sampling_strategy : dict
         The key gives the class to be over-sampled, while the value
         gives how many synthetic observations to be generated.
 
@@ -44,8 +44,6 @@ class restrictedSMOTE2(BaseOverSampler):
 
     n_jobs : int, optional (default=1)
         The number of threads to open if possible.
-
-
 
     """
     _required_beta_keys = ['a', 'b']
@@ -138,9 +136,6 @@ class restrictedSMOTE2(BaseOverSampler):
         -------
         X_new : {ndarray}, shape (n_samples_new, n_features)
             Synthetically generated samples.
-
-        y_new : ndarray, shape (n_samples_new,)
-            Target values for synthetic samples.
 
         """
         beta_a = self.beta_params['a']
