@@ -92,11 +92,8 @@ class restrictedSMOTE2(BaseOverSampler):
             X_bigger, X_smaller = self.nrf_.closest_nonclass_values(X_interest=X_class,
                                                                     X_reference=X_nonclass)
 
-            nn_num = numpy.arange(X_class.shape[0])
-            nn_num = nn_num.reshape(X_class.shape[0], 1)
-
             X_new = self._make_samples(X_bigger, X_smaller,
-                                       nn_num, n_samples, 1.0)
+                                       n_samples, 1.0)
 
             y_new = numpy.array([class_sample] * n_samples, dtype=y.dtype)
 
@@ -108,7 +105,6 @@ class restrictedSMOTE2(BaseOverSampler):
     def _make_samples(self,
                       X_big,
                       X_small,
-                      nn_num,
                       n_samples,
                       step_size=1.):
         """A support function that returns artificial samples constructed along
@@ -122,9 +118,6 @@ class restrictedSMOTE2(BaseOverSampler):
 
         X_small : {array-like}, shape (n_samples, n_features)
             Points from which the points will be created.
-
-        nn_num : ndarray, shape (n_samples_all, 1)
-            The indices of each sample in `X`.
 
         n_samples : int
             The number of samples to generate.
@@ -141,12 +134,13 @@ class restrictedSMOTE2(BaseOverSampler):
         beta_a = self.beta_params['a']
         beta_b = self.beta_params['b']
         random_state = check_random_state(self.random_state)
-        samples_indices = random_state.randint(
-            low=0, high=len(nn_num.flatten()), size=n_samples)
+
+        rows = random_state.randint(low=0,
+                                    high=X_big.shape[0],
+                                    size=n_samples)
         steps = step_size * random_state.beta(a=beta_a,
                                               b=beta_b,
                                               size=n_samples)
-        rows = numpy.floor_divide(samples_indices, nn_num.shape[1])
 
         X_new = numpy.zeros((n_samples, X_big.shape[1]), dtype=X_big.dtype)
         X_new = self._generate_sample(X_big, X_small,
@@ -170,12 +164,6 @@ class restrictedSMOTE2(BaseOverSampler):
         ----------
         X : {array-like}, shape (n_samples, n_features)
             Points from which the points will be created.
-
-        nn_data : ndarray, shape (n_samples_all, n_features)
-            Data set carrying all the neighbours to be used.
-
-        nn_num : ndarray, shape (n_samples_all, k_nearest_neighbours)
-            The nearest neighbours of each sample in `nn_data`.
 
         row : int
             Index pointing at feature vector in X which will be used
