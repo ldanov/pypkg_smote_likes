@@ -53,7 +53,6 @@ class protoSMOTE(BaseSMOTE):
                  random_state=None,
                  k_neighbors=5,
                  n_jobs=1):
-        # FIXME: in 0.6 call super()
         if not isinstance(sampling_strategy, dict):
             raise TypeError('Only explicit dict is supported')
         super().__init__(sampling_strategy=sampling_strategy,
