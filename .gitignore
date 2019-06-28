@@ -1,7 +1,8 @@
 .vscode/
 .ipynb_checkpoints/
 __pycache__/
-/build/
+build/
+notebooks/
 # Compiled python modules.
 *.pyc
 
