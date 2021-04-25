@@ -1,1 +1,1 @@
-pigar -p ./requirements.txt -P ./smote_likes -o >= -i ./smote_likes/*/tests/
+pigar -p ./requirements.txt -P ./smote_likes -i ./smote_likes/*/tests/ -o '>='

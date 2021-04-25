@@ -1,1 +1,1 @@
-sphinx-build -a -c ./docs/ -b html ./docs/ ./docs/_build/html -n
+sphinx-build -a -c ./docs/ -b html ./docs/ ./docs/_build/html

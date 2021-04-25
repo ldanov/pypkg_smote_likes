@@ -1,0 +1,312 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>smote_likes.synth_generator.proto &#8212; smote_likes v0.1.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for smote_likes.synth_generator.proto</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="sd">&quot;&quot;&quot;Prototype rebuilding of imblearn.over_sampling.SMOTE&quot;&quot;&quot;</span>
+
+<span class="c1"># Authors: Lyubomir Danov &lt;-&gt;</span>
+<span class="c1"># License: -</span>
+
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">imblearn.over_sampling._smote.base</span> <span class="kn">import</span> <span class="n">BaseSMOTE</span>
+<span class="kn">from</span> <span class="nn">imblearn.utils</span> <span class="kn">import</span> <span class="n">check_neighbors_object</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">sparse</span>
+<span class="kn">from</span> <span class="nn">sklearn.utils</span> <span class="kn">import</span> <span class="n">check_random_state</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">safe_indexing</span>
+
+
+<div class="viewcode-block" id="protoSMOTE"><a class="viewcode-back" href="../../../api/smote_likes.synth_generator.protoSMOTE.html#smote_likes.synth_generator.protoSMOTE">[docs]</a><span class="k">class</span> <span class="nc">protoSMOTE</span><span class="p">(</span><span class="n">BaseSMOTE</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class to perform over-sampling using SMOTE.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sampling_strategy: dict</span>
+<span class="sd">        The key gives the class to be over-sampled, while the value</span>
+<span class="sd">        gives how many synthetic observations to be generated.</span>
+
+<span class="sd">    random_state : int, RandomState instance or None, optional (default=None)</span>
+<span class="sd">        Control the randomization of the algorithm.</span>
+
+<span class="sd">        - If int, ``random_state`` is the seed used by the random number</span>
+<span class="sd">          generator;</span>
+<span class="sd">        - If ``RandomState`` instance, random_state is the random number</span>
+<span class="sd">          generator;</span>
+<span class="sd">        - If ``None``, the random number generator is the ``RandomState``</span>
+<span class="sd">          instance used by ``np.random``.</span>
+
+<span class="sd">    k_neighbors : int or object, optional (default=5)</span>
+<span class="sd">        If ``int``, number of nearest neighbours to used to construct synthetic</span>
+<span class="sd">        samples.  If object, an estimator that inherits from</span>
+<span class="sd">        :class:`sklearn.neighbors.base.KNeighborsMixin` that will be used to</span>
+<span class="sd">        find the k_neighbors.</span>
+
+<span class="sd">    n_jobs : int, optional (default=1)</span>
+<span class="sd">        The number of threads to open if possible.</span>
+
+<span class="sd">    ratio : str, dict, or callable</span>
+<span class="sd">        .. deprecated:: 0.4</span>
+<span class="sd">           Use the parameter ``sampling_strategy`` instead. It will be removed</span>
+<span class="sd">           in 0.6.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">sampling_strategy</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;number&#39;</span><span class="p">},</span>
+                 <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">k_neighbors</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                 <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sampling_strategy</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Only explicit dict is supported&#39;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">sampling_strategy</span><span class="o">=</span><span class="n">sampling_strategy</span><span class="p">,</span>
+                         <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span> <span class="n">k_neighbors</span><span class="o">=</span><span class="n">k_neighbors</span><span class="p">,</span>
+                         <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">ratio</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span> <span class="o">=</span> <span class="n">n_jobs</span>
+
+    <span class="k">def</span> <span class="nf">_fit_resample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_estimator</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+
+        <span class="n">X_resampled</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">y_resampled</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">class_sample</span><span class="p">,</span> <span class="n">n_samples</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling_strategy_</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">n_samples</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">target_class_indices</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">y</span> <span class="o">==</span> <span class="n">class_sample</span><span class="p">)</span>
+            <span class="n">X_class</span> <span class="o">=</span> <span class="n">safe_indexing</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">target_class_indices</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">nn_k_</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_class</span><span class="p">)</span>
+            <span class="n">nns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nn_k_</span><span class="o">.</span><span class="n">kneighbors</span><span class="p">(</span><span class="n">X_class</span><span class="p">,</span> <span class="n">return_distance</span><span class="o">=</span><span class="kc">False</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">:]</span>
+            <span class="n">X_new</span><span class="p">,</span> <span class="n">y_new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_samples</span><span class="p">(</span><span class="n">X_class</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">class_sample</span><span class="p">,</span>
+                                              <span class="n">X_class</span><span class="p">,</span> <span class="n">nns</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">sparse</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">X_new</span><span class="p">):</span>
+                <span class="n">X_resampled</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">X_resampled</span><span class="p">,</span> <span class="n">X_new</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">X_resampled</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">X_resampled</span><span class="p">,</span> <span class="n">X_new</span><span class="p">))</span>
+            <span class="n">y_resampled</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">y_resampled</span><span class="p">,</span> <span class="n">y_new</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">X_resampled</span><span class="p">,</span> <span class="n">y_resampled</span>
+
+    <span class="k">def</span> <span class="nf">_make_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                      <span class="n">X</span><span class="p">,</span>
+                      <span class="n">y_dtype</span><span class="p">,</span>
+                      <span class="n">y_type</span><span class="p">,</span>
+                      <span class="n">nn_data</span><span class="p">,</span>
+                      <span class="n">nn_num</span><span class="p">,</span>
+                      <span class="n">n_samples</span><span class="p">,</span>
+                      <span class="n">step_size</span><span class="o">=</span><span class="mf">1.</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A support function that returns artificial samples constructed along</span>
+<span class="sd">        the line connecting nearest neighbours.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : {array-like, sparse matrix}, shape (n_samples, n_features)</span>
+<span class="sd">            Points from which the points will be created.</span>
+
+<span class="sd">        y_dtype : dtype</span>
+<span class="sd">            The data type of the targets.</span>
+
+<span class="sd">        y_type : str or int</span>
+<span class="sd">            The minority target value, just so the function can return the</span>
+<span class="sd">            target values for the synthetic variables with correct length in</span>
+<span class="sd">            a clear format.</span>
+
+<span class="sd">        nn_data : ndarray, shape (n_samples_all, n_features)</span>
+<span class="sd">            Data set carrying all the neighbours to be used</span>
+
+<span class="sd">        nn_num : ndarray, shape (n_samples_all, k_nearest_neighbours)</span>
+<span class="sd">            The nearest neighbours of each sample in `nn_data`.</span>
+
+<span class="sd">        n_samples : int</span>
+<span class="sd">            The number of samples to generate.</span>
+
+<span class="sd">        step_size : float, optional (default=1.)</span>
+<span class="sd">            The step size to create samples.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        X_new : {ndarray, sparse matrix}, shape (n_samples_new, n_features)</span>
+<span class="sd">            Synthetically generated samples.</span>
+
+<span class="sd">        y_new : ndarray, shape (n_samples_new,)</span>
+<span class="sd">            Target values for synthetic samples.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">random_state</span> <span class="o">=</span> <span class="n">check_random_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">)</span>
+        <span class="n">samples_indices</span> <span class="o">=</span> <span class="n">random_state</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
+            <span class="n">low</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">nn_num</span><span class="o">.</span><span class="n">flatten</span><span class="p">()),</span> <span class="n">size</span><span class="o">=</span><span class="n">n_samples</span><span class="p">)</span>
+        <span class="n">steps</span> <span class="o">=</span> <span class="n">step_size</span> <span class="o">*</span> <span class="n">random_state</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">n_samples</span><span class="p">)</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">floor_divide</span><span class="p">(</span><span class="n">samples_indices</span><span class="p">,</span> <span class="n">nn_num</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">cols</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">samples_indices</span><span class="p">,</span> <span class="n">nn_num</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="n">y_new</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">y_type</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">samples_indices</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">y_dtype</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">sparse</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
+            <span class="n">row_indices</span><span class="p">,</span> <span class="n">col_indices</span><span class="p">,</span> <span class="n">samples</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">steps</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">X</span><span class="p">[</span><span class="n">row</span><span class="p">]</span><span class="o">.</span><span class="n">nnz</span><span class="p">:</span>
+                    <span class="n">sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_sample</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">nn_data</span><span class="p">,</span> <span class="n">nn_num</span><span class="p">,</span>
+                                                   <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+                    <span class="n">row_indices</span> <span class="o">+=</span> <span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">sample</span><span class="o">.</span><span class="n">indices</span><span class="p">)</span>
+                    <span class="n">col_indices</span> <span class="o">+=</span> <span class="n">sample</span><span class="o">.</span><span class="n">indices</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+                    <span class="n">samples</span> <span class="o">+=</span> <span class="n">sample</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="n">samples</span><span class="p">,</span> <span class="p">(</span><span class="n">row_indices</span><span class="p">,</span> <span class="n">col_indices</span><span class="p">)),</span>
+                                      <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">samples_indices</span><span class="p">),</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span>
+                                      <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span>
+                    <span class="n">y_new</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">X_new</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="n">X_new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_sample</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">nn_data</span><span class="p">,</span> <span class="n">nn_num</span><span class="p">,</span>
+                                          <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">steps</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">X_new</span><span class="p">,</span> <span class="n">y_new</span>
+
+    <span class="k">def</span> <span class="nf">_generate_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">nn_data</span><span class="p">,</span> <span class="n">nn_num</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Generate a synthetic sample.</span>
+
+<span class="sd">        The rule for the generation is:</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           \mathbf{s_{s}} = \mathbf{s_{i}} + \mathcal{u}(0, 1) \times</span>
+<span class="sd">           (\mathbf{s_{i}} - \mathbf{s_{nn}}) \,</span>
+
+<span class="sd">        where \mathbf{s_{s}} is the new synthetic samples, \mathbf{s_{i}} is</span>
+<span class="sd">        the current sample, \mathbf{s_{nn}} is a randomly selected neighbors of</span>
+<span class="sd">        \mathbf{s_{i}} and \mathcal{u}(0, 1) is a random number between [0, 1).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : {array-like, sparse matrix}, shape (n_samples, n_features)</span>
+<span class="sd">            Points from which the points will be created.</span>
+
+<span class="sd">        nn_data : ndarray, shape (n_samples_all, n_features)</span>
+<span class="sd">            Data set carrying all the neighbours to be used.</span>
+
+<span class="sd">        nn_num : ndarray, shape (n_samples_all, k_nearest_neighbours)</span>
+<span class="sd">            The nearest neighbours of each sample in `nn_data`.</span>
+
+<span class="sd">        row : int</span>
+<span class="sd">            Index pointing at feature vector in X which will be used</span>
+<span class="sd">            as a base for creating new sample.</span>
+
+<span class="sd">        col : int</span>
+<span class="sd">            Index pointing at which nearest neighbor of base feature vector</span>
+<span class="sd">            will be used when creating new sample.</span>
+
+<span class="sd">        step : float</span>
+<span class="sd">            Step size for new sample.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        X_new : {ndarray, sparse matrix}, shape (n_features,)</span>
+<span class="sd">            Single synthetically generated sample.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">X</span><span class="p">[</span><span class="n">row</span><span class="p">]</span> <span class="o">-</span> <span class="n">step</span> <span class="o">*</span> <span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">row</span><span class="p">]</span> <span class="o">-</span> <span class="n">nn_data</span><span class="p">[</span><span class="n">nn_num</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]])</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">smote_likes</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../readme.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../smote_likes.html">smote_likes Description</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Lyubomir Danov.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

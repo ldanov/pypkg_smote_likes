@@ -1,0 +1,200 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>smote_likes.distance_metrics.hvdm &#8212; smote_likes v0.1.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for smote_likes.distance_metrics.hvdm</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="c1"># Authors: Lyubomir Danov &lt;-&gt;</span>
+<span class="c1"># License: -</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">pairwise_distances</span>
+<span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="kn">import</span> <span class="n">DistanceMetric</span>
+
+<span class="kn">from</span> <span class="nn">.nvdm2</span> <span class="kn">import</span> <span class="n">normalized_vdm_2</span>
+
+
+<span class="k">def</span> <span class="nf">_split_arrays</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">ind_cat_cols</span><span class="p">):</span>
+    <span class="n">ind_num_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ind_cat_cols</span><span class="p">]</span>
+
+    <span class="n">arr_cat</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[:,</span> <span class="n">ind_cat_cols</span><span class="p">]</span>
+    <span class="n">arr_num</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[:,</span> <span class="n">ind_num_cols</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">arr_num</span><span class="p">,</span> <span class="n">arr_cat</span>
+
+
+<div class="viewcode-block" id="hvdm"><a class="viewcode-back" href="../../../api/smote_likes.distance_metrics.hvdm.html#smote_likes.distance_metrics.hvdm">[docs]</a><span class="k">def</span> <span class="nf">hvdm</span><span class="p">(</span><span class="n">X</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">ind_cat_cols</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Computes HVDM distance metric with normalized_vdm2 for categorical data</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X : numpy.ndarray</span>
+<span class="sd">        [description]</span>
+<span class="sd">    target : [type]</span>
+<span class="sd">        [description]</span>
+<span class="sd">    ind_cat_cols : list, optional</span>
+<span class="sd">        [description], by default []</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    numpy.ndarray</span>
+<span class="sd">        [description]</span>
+<span class="sd">        Currently does not set distance for missing values to 0. </span>
+<span class="sd">        Currently is only one target is given, all categorical distances are 0. </span>
+
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Generalised Harmonious Value Difference Metric (HVDM)  see :cite:t:`Wilson1997`</span>
+
+<span class="sd">    .. math:: hvdm(x,y) = \sqrt { \sum_{a=1} ^ {m} d_{a}^2(x_{a}, y_{a}) }  </span>
+<span class="sd">        = \sqrt {\sum_{a=1} ^ {num} d_{a}^2(x_{a}, y_{a}) + \sum_{b=1} ^ {cat} d_{b}^2(x_{b}, y_{b})}  </span>
+<span class="sd">    where m is the number of features or attributes.</span>
+
+<span class="sd">    .. math:: normalized_diff_{a}^2(x_{a}, y_{a}) = \left (   \frac {|x_{a} - y_{a}|} {4\sigma_a}   \right ) ^2</span>
+
+
+<span class="sd">    .. math:: d_{b}^2(x_{b}, y_{b}) = \sqrt {\sum_{c=1}^{C} \left ( \left | \frac {N_{a,x,c}} {N_{a,x}} - \frac {N_{a,y,c}} {N_{a,y}}   \right |  \right ) ^2 }</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># if y is None:</span>
+    <span class="n">only_x</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">x_num</span><span class="p">,</span> <span class="n">x_cat</span> <span class="o">=</span> <span class="n">_split_arrays</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">ind_cat_cols</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">only_x</span><span class="p">:</span>
+        <span class="c1"># square result s.t. it can be summed with cat_dist;</span>
+        <span class="c1"># after that the sqrt is taken</span>
+
+        <span class="n">x_num_dist</span> <span class="o">=</span> <span class="n">normalized_diff</span><span class="p">(</span><span class="n">x_num</span><span class="p">)</span>
+        <span class="n">x_cat_dist</span> <span class="o">=</span> <span class="n">normalized_vdm_2</span><span class="p">(</span><span class="n">x_cat</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+
+    <span class="n">x_dist</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x_num_dist</span> <span class="o">+</span> <span class="n">x_cat_dist</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x_dist</span></div>
+
+
+<span class="k">def</span> <span class="nf">normalized_diff</span><span class="p">(</span><span class="n">X</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes Normalised Difference Metric between continuous features</span>
+
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X : numpy.ndarray</span>
+<span class="sd">        [description]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    numpy.ndarray</span>
+<span class="sd">        A distance matrix of size (X_rows, X_rows)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x_num_sd</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">x_num</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">x_num_normalzied</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">x_num</span><span class="p">,</span> <span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">x_num_sd</span><span class="p">))</span>
+    <span class="n">x_num_sqrt_dist</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span>
+        <span class="n">X</span><span class="o">=</span><span class="n">x_num_normalzied</span><span class="p">,</span>
+        <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;euclidean&#39;</span><span class="p">,</span>
+        <span class="n">squared</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+    <span class="c1"># x_num_dist = numpy.square(x_num_sqrt_dist)</span>
+    <span class="k">return</span> <span class="n">x_num_dist</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">smote_likes</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../readme.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../smote_likes.html">smote_likes Description</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Lyubomir Danov.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

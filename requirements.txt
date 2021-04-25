@@ -5,28 +5,24 @@
 # smote_likes/synth_generator/restricted1.py: 10,11
 # smote_likes/synth_generator/restricted2.py: 10,11
 # smote_likes/synth_generator/restricted3.py: 10,11
-imbalanced-learn >= 0.8.0
+imbalanced_learn >= 0.8.0
 
-# smote_likes/distance_metrics/hvdm.py: 31
+# smote_likes/distance_metrics/hvdm.py: 6
 # smote_likes/distance_metrics/nrf.py: 11
-# smote_likes/distance_metrics/nvdm2.py: 17
-# smote_likes/distance_metrics/nvdm2_poc.py: 6
-# smote_likes/distance_metrics/tests/test_nrf.py: 2
-# smote_likes/distance_metrics/tests/test_nvdm2.py: 10
+# smote_likes/distance_metrics/nvdm2.py: 14
 # smote_likes/synth_generator/proto.py: 9
 # smote_likes/synth_generator/restricted1.py: 9
 # smote_likes/synth_generator/restricted2.py: 9
 # smote_likes/synth_generator/restricted3.py: 9
 numpy >= 1.20.0
 
-# smote_likes/distance_metrics/hvdm.py: 33,34
-# smote_likes/distance_metrics/nvdm2.py: 18
-# smote_likes/distance_metrics/tests/test_nvdm2.py: 6
+# smote_likes/distance_metrics/hvdm.py: 7,8
+# smote_likes/distance_metrics/nvdm2.py: 15
 # smote_likes/synth_generator/proto.py: 13
 # smote_likes/synth_generator/restricted1.py: 13
 # smote_likes/synth_generator/restricted2.py: 12
 # smote_likes/synth_generator/restricted3.py: 12
-scikit-learn >= 0.24.0
+scikit_learn >= 0.24.0
 
 # smote_likes/distance_metrics/nrf.py: 12
 # smote_likes/synth_generator/proto.py: 12

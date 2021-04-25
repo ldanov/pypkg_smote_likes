@@ -1,0 +1,155 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>protoSMOTE &#8212; smote_likes v0.1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="restrictedSMOTE1" href="smote_likes.synth_generator.restrictedSMOTE1.html" />
+    <link rel="prev" title="NearestReferenceFeatures" href="smote_likes.distance_metrics.NearestReferenceFeatures.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="protosmote">
+<h1>protoSMOTE<a class="headerlink" href="#protosmote" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="smote_likes.synth_generator.protoSMOTE">
+<em class="property">class </em><code class="sig-prename descclassname">smote_likes.synth_generator.</code><code class="sig-name descname">protoSMOTE</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sampling_strategy</span><span class="p">:</span> <span class="n">dict</span> <span class="o">=</span> <span class="default_value">{'class': 'number'}</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">k_neighbors</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/smote_likes/synth_generator/proto.html#protoSMOTE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#smote_likes.synth_generator.protoSMOTE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">imblearn.over_sampling._smote.base.BaseSMOTE</span></code></p>
+<p>Class to perform over-sampling using SMOTE.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul>
+<li><p><strong>sampling_strategy</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>) – The key gives the class to be over-sampled, while the value
+gives how many synthetic observations to be generated.</p></li>
+<li><p><strong>random_state</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">RandomState</span> <span class="pre">instance</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">optional</span> <span class="pre">(default=None)</span></code>) – Control the randomization of the algorithm.</p>
+<ul class="simple">
+<li><p>If int, <code class="docutils literal notranslate"><span class="pre">random_state</span></code> is the seed used by the random number
+generator;</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">RandomState</span></code> instance, random_state is the random number
+generator;</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the random number generator is the <code class="docutils literal notranslate"><span class="pre">RandomState</span></code>
+instance used by <code class="docutils literal notranslate"><span class="pre">np.random</span></code>.</p></li>
+</ul>
+</li>
+<li><p><strong>k_neighbors</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">optional</span> <span class="pre">(default=5)</span></code>) – If <code class="docutils literal notranslate"><span class="pre">int</span></code>, number of nearest neighbours to used to construct synthetic
+samples.  If object, an estimator that inherits from
+<code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.neighbors.base.KNeighborsMixin</span></code> that will be used to
+find the k_neighbors.</p></li>
+<li><p><strong>n_jobs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">optional</span> <span class="pre">(default=1)</span></code>) – The number of threads to open if possible.</p></li>
+<li><p><strong>ratio</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>, or <code class="xref py py-class docutils literal notranslate"><span class="pre">callable</span></code>) –</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 0.4: </span>Use the parameter <code class="docutils literal notranslate"><span class="pre">sampling_strategy</span></code> instead. It will be removed
+in 0.6.</p>
+</div>
+</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">smote_likes</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../readme.html">README</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../smote_likes.html">smote_likes Description</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../smote_likes.html#functions">Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../smote_likes.html#classes">Classes</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../smote_likes.html#id3">Classes</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../smote_likes.html">smote_likes Description</a><ul>
+      <li>Previous: <a href="smote_likes.distance_metrics.NearestReferenceFeatures.html" title="previous chapter">NearestReferenceFeatures</a></li>
+      <li>Next: <a href="smote_likes.synth_generator.restrictedSMOTE1.html" title="next chapter">restrictedSMOTE1</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Lyubomir Danov.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/api/smote_likes.synth_generator.protoSMOTE.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
