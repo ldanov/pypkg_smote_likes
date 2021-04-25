@@ -7,10 +7,11 @@
 
 
 import numpy
-from imblearn.over_sampling._smote import BaseSMOTE
+from imblearn.over_sampling._smote.base import BaseSMOTE
 from imblearn.utils import check_neighbors_object
 from scipy import sparse
-from sklearn.utils import check_random_state, safe_indexing
+from sklearn.utils import check_random_state
+from .utils import safe_indexing
 
 
 class protoSMOTE(BaseSMOTE):

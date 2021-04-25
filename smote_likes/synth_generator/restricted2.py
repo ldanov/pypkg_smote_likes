@@ -9,7 +9,9 @@
 import numpy
 from imblearn.over_sampling.base import BaseOverSampler
 from imblearn.utils import check_sampling_strategy
-from sklearn.utils import check_random_state, safe_indexing
+from sklearn.utils import check_random_state
+from .utils import safe_indexing
+
 
 from ..distance_metrics.nrf import NearestReferenceFeatures
 
