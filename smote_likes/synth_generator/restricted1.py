@@ -11,10 +11,9 @@ from imblearn.over_sampling.base import BaseOverSampler
 from imblearn.utils import check_sampling_strategy
 from scipy import sparse
 from sklearn.utils import check_random_state
-from .utils import safe_indexing
-
 
 from ..distance_metrics.nrf import NearestReferenceFeatures
+from .utils import safe_indexing
 
 
 class restrictedSMOTE1(BaseOverSampler):
@@ -49,6 +48,8 @@ class restrictedSMOTE1(BaseOverSampler):
         The number of threads to open if possible.
 
     """
+
+    # TODO: expose methods in documentation
     _required_beta_keys = ['a', 'b']
 
     def __init__(self,

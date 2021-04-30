@@ -1,5 +1,5 @@
 smote_likes Description
-====================
+=======================
 
 .. automodapi:: smote_likes.distance_metrics
    :no-heading:   

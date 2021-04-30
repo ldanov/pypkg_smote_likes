@@ -17,7 +17,7 @@
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="normalized_vdm_2" href="smote_likes.distance_metrics.normalized_vdm_2.html" />
+    <link rel="next" title="normalized_diff" href="smote_likes.distance_metrics.normalized_diff.html" />
     <link rel="prev" title="smote_likes Description" href="../smote_likes.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -39,14 +39,14 @@
 <h1>hvdm<a class="headerlink" href="#hvdm" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="smote_likes.distance_metrics.hvdm">
-<code class="sig-prename descclassname">smote_likes.distance_metrics.</code><code class="sig-name descname">hvdm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">ind_cat_cols</span><span class="p">:</span> <span class="n">list</span> <span class="o">=</span> <span class="default_value">[]</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/smote_likes/distance_metrics/hvdm.html#hvdm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#smote_likes.distance_metrics.hvdm" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">smote_likes.distance_metrics.</code><code class="sig-name descname">hvdm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">ind_cat_cols</span><span class="p">:</span> <span class="n">list</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/smote_likes/distance_metrics/hvdm.html#hvdm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#smote_likes.distance_metrics.hvdm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes HVDM distance metric with normalized_vdm2 for categorical data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>X</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – [description]</p></li>
 <li><p><strong>target</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">[type]</span></code>) – [description]</p></li>
-<li><p><strong>ind_cat_cols</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>, <em>optional</em>) – [description], by default []</p></li>
+<li><p><strong>ind_cat_cols</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>, <em>optional</em>) – [description], by default None</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -56,15 +56,18 @@ Currently is only one target is given, all categorical distances are 0.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Generalised Harmonious Value Difference Metric (HVDM)  see <span id="id1">Wilson and Martinez [<a class="reference internal" href="../smote_likes.html#id5">WM97</a>]</span></p>
+<p>Generalised Harmonious Value Difference Metric (HVDM)  see <span id="id1">Wilson and Martinez [<a class="reference internal" href="../smote_likes.html#id3">WM97</a>]</span></p>
 <div class="math notranslate nohighlight">
 \[hvdm(x,y) = \sqrt { \sum_{a=1} ^ {m} d_{a}^2(x_{a}, y_{a}) }
 = \sqrt {\sum_{a=1} ^ {num} d_{a}^2(x_{a}, y_{a}) + \sum_{b=1} ^ {cat} d_{b}^2(x_{b}, y_{b})}\]</div>
 <p>where m is the number of features or attributes.</p>
 <div class="math notranslate nohighlight">
-\[normalized_diff_{a}^2(x_{a}, y_{a}) = \left (   \frac {|x_{a} - y_{a}|} {4\sigma_a}   \right ) ^2\]</div>
+\[d_{a}(x_{a}, y_{a}) = \left (   \frac {|x_{a} - y_{a}|} {4\sigma_a}   \right )\]</div>
+<p>Implemented in <a class="reference internal" href="smote_likes.distance_metrics.normalized_diff.html#smote_likes.distance_metrics.normalized_diff" title="smote_likes.distance_metrics.normalized_diff"><code class="xref py py-func docutils literal notranslate"><span class="pre">smote_likes.distance_metrics.normalized_diff()</span></code></a></p>
 <div class="math notranslate nohighlight">
-\[d_{b}^2(x_{b}, y_{b}) = \sqrt {\sum_{c=1}^{C} \left ( \left | \frac {N_{a,x,c}} {N_{a,x}} - \frac {N_{a,y,c}} {N_{a,y}}   \right |  \right ) ^2 }\]</div>
+\[d_{b}(x_{b}, y_{b}) = \sum_{c=1}^{C} \left ( \left | \frac {N_{a,x,c}} {N_{a,x}} - \frac {N_{a,y,c}} {N_{a,y}}   \right |  \right ) ^2\]</div>
+<p>where C is the list of classes or targets.
+Implemented in <a class="reference internal" href="smote_likes.distance_metrics.normalized_vdm_2.html#smote_likes.distance_metrics.normalized_vdm_2" title="smote_likes.distance_metrics.normalized_vdm_2"><code class="xref py py-func docutils literal notranslate"><span class="pre">smote_likes.distance_metrics.normalized_vdm_2()</span></code></a></p>
 </dd></dl>
 
 </div>
@@ -92,7 +95,7 @@ Currently is only one target is given, all categorical distances are 0.</p>
 <li class="toctree-l1 current"><a class="reference internal" href="../smote_likes.html">smote_likes Description</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../smote_likes.html#functions">Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../smote_likes.html#classes">Classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../smote_likes.html#id3">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../smote_likes.html#id1">Classes</a></li>
 </ul>
 </li>
 </ul>
@@ -103,7 +106,7 @@ Currently is only one target is given, all categorical distances are 0.</p>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="../smote_likes.html">smote_likes Description</a><ul>
       <li>Previous: <a href="../smote_likes.html" title="previous chapter">smote_likes Description</a></li>
-      <li>Next: <a href="smote_likes.distance_metrics.normalized_vdm_2.html" title="next chapter">normalized_vdm_2</a></li>
+      <li>Next: <a href="smote_likes.distance_metrics.normalized_diff.html" title="next chapter">normalized_diff</a></li>
   </ul></li>
   </ul></li>
 </ul>

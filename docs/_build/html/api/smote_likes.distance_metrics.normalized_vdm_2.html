@@ -17,8 +17,8 @@
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="normalized_vdm_2_alt" href="smote_likes.distance_metrics.normalized_vdm_2_alt.html" />
-    <link rel="prev" title="hvdm" href="smote_likes.distance_metrics.hvdm.html" />
+    <link rel="next" title="NearestReferenceFeatures" href="smote_likes.distance_metrics.NearestReferenceFeatures.html" />
+    <link rel="prev" title="normalized_diff" href="smote_likes.distance_metrics.normalized_diff.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -45,20 +45,20 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>X</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – [description]</p></li>
-<li><p><strong>target</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">[type]</span></code>) – [description]</p></li>
+<li><p><strong>target</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – The target class for each row in X.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>[type]</em> – [description]</p>
+<dd class="field-even"><p><em>numpy.ndarray</em> – [description]</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Based on normalized_vdm2 (Equation 15) from <span id="id1">Wilson and Martinez [<a class="reference internal" href="../smote_likes.html#id5">WM97</a>]</span>.</p>
-<div class="math notranslate nohighlight" id="equation-nvdm2-cat">
-<span class="eqno">(1)<a class="headerlink" href="#equation-nvdm2-cat" title="Permalink to this equation">¶</a></span>\[\begin{split}&amp; \sum_{b=1}^{cat}d_{b}^2(x_{b}, y_{b}) = \\
-&amp; \sum_{b=1}^{cat} \left ( \sqrt{  \sum_{c=1}^{C} \left ( \left | \frac {N_{a,x,c}} {N_{a,x}} - \frac {N_{a,y,c}} {N_{a,y}}   \right |  \right ) ^2 } \right ) ^2 = \\
-&amp; \sum_{c=1}^{C} \sum_{b=1}^{cat}  \left (  \frac {N_{a,x,c}} {N_{a,x}} - \frac {N_{a,y,c}} {N_{a,y}}  \right ) ^2\end{split}\]</div>
-<p>where cat represents only categorical features.</p>
+<p>Based on normalized_vdm2 (Equation 15) from <span id="id1">Wilson and Martinez [<a class="reference internal" href="../smote_likes.html#id3">WM97</a>]</span>.
+As per the paper the square root is not taken, because the individual
+attribute distances are themselves squared when used in the HVDM function.</p>
+<div class="math notranslate nohighlight">
+\[normalized\_vdm(x_{b}, y_{b}) = \sum_{c=1}^{C} \left ( \left | \frac {N_{a,x,c}} {N_{a,x}} - \frac {N_{a,y,c}} {N_{a,y}}   \right |  \right ) ^2\]</div>
+<p>where C is the list of classes.</p>
 </dd></dl>
 
 </div>
@@ -86,7 +86,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../smote_likes.html">smote_likes Description</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../smote_likes.html#functions">Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../smote_likes.html#classes">Classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../smote_likes.html#id3">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../smote_likes.html#id1">Classes</a></li>
 </ul>
 </li>
 </ul>
@@ -96,8 +96,8 @@
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="../smote_likes.html">smote_likes Description</a><ul>
-      <li>Previous: <a href="smote_likes.distance_metrics.hvdm.html" title="previous chapter">hvdm</a></li>
-      <li>Next: <a href="smote_likes.distance_metrics.normalized_vdm_2_alt.html" title="next chapter">normalized_vdm_2_alt</a></li>
+      <li>Previous: <a href="smote_likes.distance_metrics.normalized_diff.html" title="previous chapter">normalized_diff</a></li>
+      <li>Next: <a href="smote_likes.distance_metrics.NearestReferenceFeatures.html" title="next chapter">NearestReferenceFeatures</a></li>
   </ul></li>
   </ul></li>
 </ul>

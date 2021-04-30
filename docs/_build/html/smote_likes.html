@@ -35,9 +35,9 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="smote-likes-description">
-<h1>smote_likes Description<a class="headerlink" href="#smote-likes-description" title="Permalink to this headline">¶</a></h1>
-<span class="target" id="module-smote_likes.distance_metrics"></span><div class="section" id="functions">
+  <div class="section" id="module-smote_likes.distance_metrics">
+<span id="smote-likes-description"></span><h1>smote_likes Description<a class="headerlink" href="#module-smote_likes.distance_metrics" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -48,11 +48,11 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="api/smote_likes.distance_metrics.hvdm.html#smote_likes.distance_metrics.hvdm" title="smote_likes.distance_metrics.hvdm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hvdm</span></code></a>(X, target[, ind_cat_cols])</p></td>
 <td><p>Computes HVDM distance metric with normalized_vdm2 for categorical data</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="api/smote_likes.distance_metrics.normalized_vdm_2.html#smote_likes.distance_metrics.normalized_vdm_2" title="smote_likes.distance_metrics.normalized_vdm_2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalized_vdm_2</span></code></a>(X, target)</p></td>
-<td><p>Normalised Value Difference Metric 2 (Equation 15, normalized_vdm2) from <span id="id1">Wilson and Martinez [<a class="reference internal" href="#id5">WM97</a>]</span>.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="api/smote_likes.distance_metrics.normalized_diff.html#smote_likes.distance_metrics.normalized_diff" title="smote_likes.distance_metrics.normalized_diff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalized_diff</span></code></a>(X, y)</p></td>
+<td><p>Computes Normalised Difference Metric between continuous features</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="api/smote_likes.distance_metrics.normalized_vdm_2_alt.html#smote_likes.distance_metrics.normalized_vdm_2_alt" title="smote_likes.distance_metrics.normalized_vdm_2_alt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalized_vdm_2_alt</span></code></a>(X, target)</p></td>
-<td><p>Normalised Value Difference Metric 2 (Equation 15, normalized_vdm2) from <span id="id2">Wilson and Martinez [<a class="reference internal" href="#id5">WM97</a>]</span>.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/smote_likes.distance_metrics.normalized_vdm_2.html#smote_likes.distance_metrics.normalized_vdm_2" title="smote_likes.distance_metrics.normalized_vdm_2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalized_vdm_2</span></code></a>(X, target)</p></td>
+<td><p>Computes Normalised Value Difference Metric 2</p></td>
 </tr>
 </tbody>
 </table>
@@ -71,8 +71,8 @@
 </tbody>
 </table>
 <span class="target" id="module-smote_likes.synth_generator"></span></div>
-<div class="section" id="id3">
-<h2>Classes<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h2>Classes<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
@@ -93,8 +93,8 @@
 </tr>
 </tbody>
 </table>
-<p id="id4"><dl class="citation">
-<dt class="label" id="id5"><span class="brackets">WM97</span><span class="fn-backref">(<a href="#id1">1</a>,<a href="#id1">2</a>,<a href="#id1">3</a>,<a href="#id1">4</a>,<a href="#id2">5</a>)</span></dt>
+<p id="id2"><dl class="citation">
+<dt class="label" id="id3"><span class="brackets">WM97</span></dt>
 <dd><p>D. R. Wilson and T. R. Martinez. Improved heterogeneous distance functions. <em>Journal of Artificial Intelligence Research</em>, 6:1–34, jan 1997. <a class="reference external" href="https://doi.org/10.1613/jair.346">doi:10.1613/jair.346</a>.</p>
 </dd>
 </dl>
@@ -125,7 +125,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">smote_likes Description</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#functions">Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#classes">Classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id3">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Classes</a></li>
 </ul>
 </li>
 </ul>

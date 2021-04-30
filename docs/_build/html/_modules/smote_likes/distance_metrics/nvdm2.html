@@ -48,9 +48,7 @@
 <span class="c1"># License: -</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span>
-<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">pairwise_distances</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
-
 
 <div class="viewcode-block" id="normalized_vdm_2"><a class="viewcode-back" href="../../../api/smote_likes.distance_metrics.normalized_vdm_2.html#smote_likes.distance_metrics.normalized_vdm_2">[docs]</a><span class="k">def</span> <span class="nf">normalized_vdm_2</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Computes Normalised Value Difference Metric 2</span>
@@ -59,57 +57,31 @@
 <span class="sd">    ----------</span>
 <span class="sd">    X : numpy.ndarray</span>
 <span class="sd">        [description]</span>
-<span class="sd">    target : [type]</span>
-<span class="sd">        [description]</span>
+<span class="sd">    target : numpy.ndarray</span>
+<span class="sd">        The target class for each row in X.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    [type]</span>
+<span class="sd">    numpy.ndarray</span>
 <span class="sd">        [description]</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    Based on normalized_vdm2 (Equation 15) from :cite:t:`Wilson1997`.</span>
+<span class="sd">    Based on normalized_vdm2 (Equation 15) from :cite:t:`Wilson1997`. </span>
+<span class="sd">    As per the paper the square root is not taken, because the individual </span>
+<span class="sd">    attribute distances are themselves squared when used in the HVDM function.</span>
 
 <span class="sd">    .. math:: </span>
-<span class="sd">        :label: nvdm2_cat</span>
 
-<span class="sd">        &amp; \sum_{b=1}^{cat}d_{b}^2(x_{b}, y_{b}) = \\</span>
-<span class="sd">        &amp; \sum_{b=1}^{cat} \left ( \sqrt{  \sum_{c=1}^{C} \left ( \left | \frac {N_{a,x,c}} {N_{a,x}} - \frac {N_{a,y,c}} {N_{a,y}}   \right |  \right ) ^2 } \right ) ^2 = \\</span>
-<span class="sd">        &amp; \sum_{c=1}^{C} \sum_{b=1}^{cat}  \left (  \frac {N_{a,x,c}} {N_{a,x}} - \frac {N_{a,y,c}} {N_{a,y}}  \right ) ^2  </span>
+<span class="sd">        normalized\_vdm(x_{b}, y_{b}) = \sum_{c=1}^{C} \left ( \left | \frac {N_{a,x,c}} {N_{a,x}} - \frac {N_{a,y,c}} {N_{a,y}}   \right |  \right ) ^2 </span>
 
 
-<span class="sd">    where cat represents only categorical features. </span>
+<span class="sd">    where C is the list of classes. </span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">list_conditional_probs</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-        <span class="n">list_conditional_probs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_get_cond_proba</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="n">cat</span><span class="p">],</span> <span class="n">target</span><span class="p">))</span>
-    <span class="n">nvdm2</span> <span class="o">=</span> <span class="n">_convert_euclidean</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">list_conditional_probs</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">nvdm2</span></div>
 
-
-<div class="viewcode-block" id="normalized_vdm_2_alt"><a class="viewcode-back" href="../../../api/smote_likes.distance_metrics.normalized_vdm_2_alt.html#smote_likes.distance_metrics.normalized_vdm_2_alt">[docs]</a><span class="k">def</span> <span class="nf">normalized_vdm_2_alt</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Computes Normalised Value Difference Metric 2 in alternative way</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    X : numpy.ndarray</span>
-<span class="sd">        [description]</span>
-<span class="sd">    target : [type]</span>
-<span class="sd">        [description]</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    [type]</span>
-<span class="sd">        [description]</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    Alternative to :py:func:`smote_likes.distance_metrics.normalized_vdm_2`. </span>
-<span class="sd">    See Notes for more information.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
+    <span class="c1"># TODO: check whether correct formula is shown in Notes</span>
+    <span class="c1"># TODO: check whether formula shown matches code</span>
     <span class="n">cat_dicts</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
         <span class="n">cat_dicts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_get_cond_proba</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="n">cat</span><span class="p">],</span> <span class="n">target</span><span class="p">))</span>
@@ -131,24 +103,6 @@
         <span class="k">for</span> <span class="n">trgt</span> <span class="ow">in</span> <span class="n">search</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">d</span> <span class="o">+=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">search</span><span class="p">[</span><span class="n">trgt</span><span class="p">][</span><span class="n">a</span><span class="p">]</span> <span class="o">-</span> <span class="n">search</span><span class="p">[</span><span class="n">trgt</span><span class="p">][</span><span class="n">b</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">d</span>
-
-
-<span class="k">def</span> <span class="nf">_convert_euclidean</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">list_cprobs</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
-    <span class="n">unique_targets</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
-
-    <span class="n">list_pdist_per_class</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">trgt</span> <span class="ow">in</span> <span class="n">unique_targets</span><span class="p">:</span>
-        <span class="n">all_cols</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-            <span class="n">P_ac</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span>
-                <span class="n">list_cprobs</span><span class="p">[</span><span class="n">col</span><span class="p">][</span><span class="n">trgt</span><span class="p">]</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">)(</span><span class="n">X</span><span class="p">[:,</span> <span class="n">col</span><span class="p">])</span>
-            <span class="n">all_cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">P_ac</span><span class="p">)</span>
-        <span class="n">X_P_c</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">all_cols</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
-        <span class="k">assert</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">X_P_c</span><span class="o">.</span><span class="n">shape</span>
-        <span class="n">pdist_c</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">pairwise_distances</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X_P_c</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;euclidean&#39;</span><span class="p">))</span>
-        <span class="n">list_pdist_per_class</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pdist_c</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">list_pdist_per_class</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_get_attrib_count_class</span><span class="p">(</span><span class="n">attrib</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>

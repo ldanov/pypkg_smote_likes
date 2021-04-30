@@ -43,6 +43,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.mathjax',
     'sphinxcontrib.bibtex',
+    'sphinx.ext.todo',
     'm2r2'
 ]
 

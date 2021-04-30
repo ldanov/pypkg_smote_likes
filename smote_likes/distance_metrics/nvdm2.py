@@ -12,9 +12,7 @@
 # License: -
 
 import numpy
-from sklearn.metrics import pairwise_distances
 import itertools
-
 
 def normalized_vdm_2(X, target):
     r"""Computes Normalised Value Difference Metric 2
@@ -23,57 +21,31 @@ def normalized_vdm_2(X, target):
     ----------
     X : numpy.ndarray
         [description]
-    target : [type]
-        [description]
+    target : numpy.ndarray
+        The target class for each row in X.
 
     Returns
     -------
-    [type]
+    numpy.ndarray
         [description]
 
     Notes
     -----
-    Based on normalized_vdm2 (Equation 15) from :cite:t:`Wilson1997`.
+    Based on normalized_vdm2 (Equation 15) from :cite:t:`Wilson1997`. 
+    As per the paper the square root is not taken, because the individual 
+    attribute distances are themselves squared when used in the HVDM function.
 
     .. math:: 
-        :label: nvdm2_cat
 
-        & \sum_{b=1}^{cat}d_{b}^2(x_{b}, y_{b}) = \\
-        & \sum_{b=1}^{cat} \left ( \sqrt{  \sum_{c=1}^{C} \left ( \left | \frac {N_{a,x,c}} {N_{a,x}} - \frac {N_{a,y,c}} {N_{a,y}}   \right |  \right ) ^2 } \right ) ^2 = \\
-        & \sum_{c=1}^{C} \sum_{b=1}^{cat}  \left (  \frac {N_{a,x,c}} {N_{a,x}} - \frac {N_{a,y,c}} {N_{a,y}}  \right ) ^2  
+        normalized\_vdm(x_{b}, y_{b}) = \sum_{c=1}^{C} \left ( \left | \frac {N_{a,x,c}} {N_{a,x}} - \frac {N_{a,y,c}} {N_{a,y}}   \right |  \right ) ^2 
 
 
-    where cat represents only categorical features. 
+    where C is the list of classes. 
     """
 
-    list_conditional_probs = []
-    for cat in range(X.shape[1]):
-        list_conditional_probs.append(_get_cond_proba(X[:, cat], target))
-    nvdm2 = _convert_euclidean(X, list_conditional_probs, target)
-    return nvdm2
 
-
-def normalized_vdm_2_alt(X, target):
-    r"""Computes Normalised Value Difference Metric 2 in alternative way
-
-    Parameters
-    ----------
-    X : numpy.ndarray
-        [description]
-    target : [type]
-        [description]
-
-    Returns
-    -------
-    [type]
-        [description]
-
-    Notes
-    -----
-    Alternative to :py:func:`smote_likes.distance_metrics.normalized_vdm_2`. 
-    See Notes for more information.
-    """
-
+    # TODO: check whether correct formula is shown in Notes
+    # TODO: check whether formula shown matches code
     cat_dicts = []
     for cat in range(X.shape[1]):
         cat_dicts.append(_get_cond_proba(X[:, cat], target))
@@ -95,24 +67,6 @@ def _nvdm2(X, Y, cat_dicts):
         for trgt in search.keys():
             d += numpy.square(search[trgt][a] - search[trgt][b])
     return d
-
-
-def _convert_euclidean(X, list_cprobs, target):
-    unique_targets = numpy.unique(target)
-
-    list_pdist_per_class = []
-    for trgt in unique_targets:
-        all_cols = []
-        for col in range(X.shape[1]):
-            P_ac = numpy.vectorize(
-                list_cprobs[col][trgt].__getitem__)(X[:, col])
-            all_cols.append(P_ac)
-        X_P_c = numpy.vstack(all_cols).transpose()
-        assert X.shape == X_P_c.shape
-        pdist_c = numpy.square(pairwise_distances(X=X_P_c, metric='euclidean'))
-        list_pdist_per_class.append(pdist_c)
-
-    return sum(list_pdist_per_class)
 
 
 def _get_attrib_count_class(attrib, target):

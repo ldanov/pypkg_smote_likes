@@ -49,6 +49,7 @@ class protoSMOTE(BaseSMOTE):
 
     """
 
+    # TODO: expose methods in documentation
     def __init__(self,
                  sampling_strategy: dict = {'class': 'number'},
                  random_state=None,

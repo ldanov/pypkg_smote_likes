@@ -1,3 +1,6 @@
+# Copied from scikit-learn v0.22
+# https://github.com/scikit-learn/scikit-learn/blob/0.22.X/sklearn/utils/__init__.py
+
 def safe_indexing(X, indices, axis=0):
     """Return rows, items or columns of X using indices.
     .. deprecated:: 0.22
