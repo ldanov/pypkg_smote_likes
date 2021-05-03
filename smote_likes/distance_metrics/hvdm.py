@@ -43,8 +43,8 @@ def hvdm(X: numpy.ndarray, target, ind_cat_cols: list = None):
     -----
     Generalised Harmonious Value Difference Metric (HVDM)  see :cite:t:`Wilson1997`
 
-    .. math:: hvdm(x,y) = \sqrt { \sum_{a=1} ^ {m} d_{a}^2(x_{a}, y_{a}) }  
-        = \sqrt {\sum_{a=1} ^ {num} d_{a}^2(x_{a}, y_{a}) + \sum_{b=1} ^ {cat} d_{b}^2(x_{b}, y_{b})}  
+    .. math:: hvdm(x,y) &= \sqrt { \sum_{a=1} ^ {m} d_{a}^2(x_{a}, y_{a}) } \\
+        &= \sqrt {\sum_{a=1} ^ {num} d_{a}^2(x_{a}, y_{a}) + \sum_{b=1} ^ {cat} d_{b}^2(x_{b}, y_{b})}  
 
     where m is the number of features or attributes.
 
@@ -52,7 +52,7 @@ def hvdm(X: numpy.ndarray, target, ind_cat_cols: list = None):
 
     Implemented in :py:func:`smote_likes.distance_metrics.normalized_diff`
 
-    .. math:: d_{b}(x_{b}, y_{b}) = \sum_{c=1}^{C} \left ( \left | \frac {N_{a,x,c}} {N_{a,x}} - \frac {N_{a,y,c}} {N_{a,y}}   \right |  \right ) ^2 
+    .. math:: d_{b}(x_{b}, y_{b}) = \sqrt {\sum_{c=1}^{C} \left ( \left | \frac {N_{a,x,c}} {N_{a,x}} - \frac {N_{a,y,c}} {N_{a,y}}   \right |  \right ) ^2 }
 
     where C is the list of classes or targets.
     Implemented in :py:func:`smote_likes.distance_metrics.normalized_vdm_2`
@@ -63,24 +63,23 @@ def hvdm(X: numpy.ndarray, target, ind_cat_cols: list = None):
     # TODO: check whether formula shown matches code
     if ind_cat_cols is None:
         ind_cat_cols = []
-    # if y is None:
-    only_x = True
+    if y is None:
+        y = numpy.ones(shape=(X.shape[0],))
 
     x_num, x_cat = _split_arrays(X, ind_cat_cols)
 
     # TODO: more efficient if any of x_num, x_cat is empty
-    if only_x:
-        # square result s.t. it can be summed with cat_dist;
-        # after that the sqrt is taken
 
-        x_num_dist = normalized_diff(x_num)
-        x_cat_dist = normalized_vdm_2(x_cat, target)
+    # square result s.t. it can be summed with cat_dist;
+    # after that the sqrt is taken
 
+    x_num_dist = normalized_diff(x_num)
+    x_cat_dist = normalized_vdm_2(x_cat, target)
     x_dist = numpy.sqrt(x_num_dist + x_cat_dist)
     return x_dist
 
 
-def normalized_diff(X: numpy.ndarray, y: numpy.ndarray):
+def normalized_diff(X: numpy.ndarray) -> numpy.ndarray:
     r"""Computes Normalised Difference Metric between continuous features
 
     Parameters
@@ -106,8 +105,8 @@ def normalized_diff(X: numpy.ndarray, y: numpy.ndarray):
 
     # TODO: check whether correct formula is shown in Notes
     # TODO: check whether formula shown matches code
-    x_num_sd = numpy.std(x_num, axis=0, keepdims=True)
-    x_num_normalzied = numpy.divide(x_num, (4*x_num_sd))
+    x_num_sd = numpy.std(X, axis=0, keepdims=True)
+    x_num_normalzied = numpy.divide(X, (4*x_num_sd))
     x_num_sqrt_dist = pairwise_distances(
         X=x_num_normalzied,
         metric='euclidean',

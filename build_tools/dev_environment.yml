@@ -18,4 +18,5 @@ dependencies:
     - sphinx_automodapi
     - sphinxcontrib-bibtex
     - m2r2
+    - rope
     - -r file:../requirements.txt

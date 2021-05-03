@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>normalized_vdm_2 &#8212; smote_likes v0.1.0 documentation</title>
+    <title>get_cond_probas &#8212; smote_likes v0.1.0 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -17,8 +17,8 @@
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="nvdm2" href="smote_likes.distance_metrics.nvdm2.html" />
-    <link rel="prev" title="normalized_diff" href="smote_likes.distance_metrics.normalized_diff.html" />
+    <link rel="next" title="NearestReferenceFeatures" href="smote_likes.distance_metrics.NearestReferenceFeatures.html" />
+    <link rel="prev" title="nvdm2" href="smote_likes.distance_metrics.nvdm2.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -35,32 +35,26 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="normalized-vdm-2">
-<h1>normalized_vdm_2<a class="headerlink" href="#normalized-vdm-2" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="get-cond-probas">
+<h1>get_cond_probas<a class="headerlink" href="#get-cond-probas" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="smote_likes.distance_metrics.normalized_vdm_2">
-<code class="sig-prename descclassname">smote_likes.distance_metrics.</code><code class="sig-name descname">normalized_vdm_2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">target</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/smote_likes/distance_metrics/nvdm2.html#normalized_vdm_2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#smote_likes.distance_metrics.normalized_vdm_2" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes Normalised Value Difference Metric 2</p>
+<dt id="smote_likes.distance_metrics.get_cond_probas">
+<code class="sig-prename descclassname">smote_likes.distance_metrics.</code><code class="sig-name descname">get_cond_probas</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">target</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; list<a class="reference internal" href="../_modules/smote_likes/distance_metrics/nvdm2.html#get_cond_probas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#smote_likes.distance_metrics.get_cond_probas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of all conditional probabilities in each column of X</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – [description]</p></li>
+<li><p><strong>X</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – The feature matrix with dimensions (observations, features).</p></li>
 <li><p><strong>target</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – The target class for each row in X.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>numpy.ndarray</em> – [description]</p>
+<dd class="field-even"><p><p><em>list</em> – Each entry contains the conditional probability <span class="math notranslate nohighlight">\(P_{a,x,c}\)</span>
+in a dictionary with following structure:</p>
+<p><cite>target value -&gt; attribute value -&gt; attribute count</cite></p>
+</p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>Based on normalized_vdm2 (Equation 15) from <span id="id1">Wilson and Martinez [<a class="reference internal" href="../smote_likes.html#id3">WM97</a>]</span>.
-As per the paper the square root is not taken, because the individual
-attribute distances are themselves squared when used in the HVDM function.</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}&amp;normalized\_vdm(x_{b}, y_{b}) \\
-    &amp;= \sum_{c=1}^{C} \left | P_{a,x,c} - P_{a,y,c} \right | ^2 \\
-    &amp;= \sum_{c=1}^{C} \left | \frac {N_{a,x,c}} {N_{a,x}} - \frac {N_{a,y,c}} {N_{a,y}}   \right | ^2\end{split}\]</div>
-<p>where C is the list of classes.</p>
 </dd></dl>
 
 </div>
@@ -98,8 +92,8 @@ attribute distances are themselves squared when used in the HVDM function.</p>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="../smote_likes.html">smote_likes Description</a><ul>
-      <li>Previous: <a href="smote_likes.distance_metrics.normalized_diff.html" title="previous chapter">normalized_diff</a></li>
-      <li>Next: <a href="smote_likes.distance_metrics.nvdm2.html" title="next chapter">nvdm2</a></li>
+      <li>Previous: <a href="smote_likes.distance_metrics.nvdm2.html" title="previous chapter">nvdm2</a></li>
+      <li>Next: <a href="smote_likes.distance_metrics.NearestReferenceFeatures.html" title="next chapter">NearestReferenceFeatures</a></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -134,7 +128,7 @@ attribute distances are themselves squared when used in the HVDM function.</p>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
-      <a href="../_sources/api/smote_likes.distance_metrics.normalized_vdm_2.rst.txt"
+      <a href="../_sources/api/smote_likes.distance_metrics.get_cond_probas.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

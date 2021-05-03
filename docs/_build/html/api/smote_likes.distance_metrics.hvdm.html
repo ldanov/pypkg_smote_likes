@@ -58,14 +58,14 @@ Currently is only one target is given, all categorical distances are 0.</p>
 <p class="rubric">Notes</p>
 <p>Generalised Harmonious Value Difference Metric (HVDM)  see <span id="id1">Wilson and Martinez [<a class="reference internal" href="../smote_likes.html#id3">WM97</a>]</span></p>
 <div class="math notranslate nohighlight">
-\[hvdm(x,y) = \sqrt { \sum_{a=1} ^ {m} d_{a}^2(x_{a}, y_{a}) }
-= \sqrt {\sum_{a=1} ^ {num} d_{a}^2(x_{a}, y_{a}) + \sum_{b=1} ^ {cat} d_{b}^2(x_{b}, y_{b})}\]</div>
+\[\begin{split}hvdm(x,y) &amp;= \sqrt { \sum_{a=1} ^ {m} d_{a}^2(x_{a}, y_{a}) } \\
+&amp;= \sqrt {\sum_{a=1} ^ {num} d_{a}^2(x_{a}, y_{a}) + \sum_{b=1} ^ {cat} d_{b}^2(x_{b}, y_{b})}\end{split}\]</div>
 <p>where m is the number of features or attributes.</p>
 <div class="math notranslate nohighlight">
 \[d_{a}(x_{a}, y_{a}) = \left (   \frac {|x_{a} - y_{a}|} {4\sigma_a}   \right )\]</div>
 <p>Implemented in <a class="reference internal" href="smote_likes.distance_metrics.normalized_diff.html#smote_likes.distance_metrics.normalized_diff" title="smote_likes.distance_metrics.normalized_diff"><code class="xref py py-func docutils literal notranslate"><span class="pre">smote_likes.distance_metrics.normalized_diff()</span></code></a></p>
 <div class="math notranslate nohighlight">
-\[d_{b}(x_{b}, y_{b}) = \sum_{c=1}^{C} \left ( \left | \frac {N_{a,x,c}} {N_{a,x}} - \frac {N_{a,y,c}} {N_{a,y}}   \right |  \right ) ^2\]</div>
+\[d_{b}(x_{b}, y_{b}) = \sqrt {\sum_{c=1}^{C} \left ( \left | \frac {N_{a,x,c}} {N_{a,x}} - \frac {N_{a,y,c}} {N_{a,y}}   \right |  \right ) ^2 }\]</div>
 <p>where C is the list of classes or targets.
 Implemented in <a class="reference internal" href="smote_likes.distance_metrics.normalized_vdm_2.html#smote_likes.distance_metrics.normalized_vdm_2" title="smote_likes.distance_metrics.normalized_vdm_2"><code class="xref py py-func docutils literal notranslate"><span class="pre">smote_likes.distance_metrics.normalized_vdm_2()</span></code></a></p>
 </dd></dl>

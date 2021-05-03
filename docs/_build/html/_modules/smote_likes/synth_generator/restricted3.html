@@ -46,10 +46,9 @@
 <span class="kn">from</span> <span class="nn">imblearn.over_sampling.base</span> <span class="kn">import</span> <span class="n">BaseOverSampler</span>
 <span class="kn">from</span> <span class="nn">imblearn.utils</span> <span class="kn">import</span> <span class="n">check_sampling_strategy</span>
 <span class="kn">from</span> <span class="nn">sklearn.utils</span> <span class="kn">import</span> <span class="n">check_random_state</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">safe_indexing</span>
-
 
 <span class="kn">from</span> <span class="nn">..distance_metrics.nrf</span> <span class="kn">import</span> <span class="n">NearestReferenceFeatures</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">safe_indexing</span>
 
 
 <div class="viewcode-block" id="restrictedSMOTE3"><a class="viewcode-back" href="../../../api/smote_likes.synth_generator.restrictedSMOTE3.html#smote_likes.synth_generator.restrictedSMOTE3">[docs]</a><span class="k">class</span> <span class="nc">restrictedSMOTE3</span><span class="p">(</span><span class="n">BaseOverSampler</span><span class="p">):</span>
@@ -253,7 +252,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">beta_params</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">beta_params</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">],</span>
             <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">beta_params</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]</span>
-        <span class="p">}</span></div>
+        <span class="p">}</span>
+        <span class="sd">&quot;&quot;&quot;[summary]</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
 </pre></div>
 
           </div>
