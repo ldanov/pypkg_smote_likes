@@ -10,23 +10,14 @@ from sklearn.neighbors import DistanceMetric
 from .nvdm2 import normalized_vdm_2
 
 
-def _split_arrays(arr, ind_cat_cols):
-    ind_num_cols = [i for i in range(arr.shape[1]) if i not in ind_cat_cols]
-
-    arr_cat = arr[:, ind_cat_cols]
-    arr_num = arr[:, ind_num_cols]
-
-    return arr_num, arr_cat
-
-
-def hvdm(X: numpy.ndarray, target, ind_cat_cols: list = None):
+def hvdm(X: numpy.ndarray, y, ind_cat_cols: list = None):
     r"""Computes HVDM distance metric with normalized_vdm2 for categorical data
 
     Parameters
     ----------
     X : numpy.ndarray
         [description]
-    target : [type]
+    y : [type]
         [description]
     ind_cat_cols : list, optional
         [description], by default None
@@ -43,38 +34,108 @@ def hvdm(X: numpy.ndarray, target, ind_cat_cols: list = None):
     -----
     Generalised Harmonious Value Difference Metric (HVDM)  see :cite:t:`Wilson1997`
 
-    .. math:: hvdm(x,y) &= \sqrt { \sum_{a=1} ^ {m} d_{a}^2(x_{a}, y_{a}) } \\
-        &= \sqrt {\sum_{a=1} ^ {num} d_{a}^2(x_{a}, y_{a}) + \sum_{b=1} ^ {cat} d_{b}^2(x_{b}, y_{b})}  
+    .. math:: 
+    
+        hvdm(x,y)  \\
+        &= \sqrt { \sum_{f=1} ^ {F} d_{f}^2(x, y) } \\
+        &= \sqrt {\sum_{a=1} ^ {num} d_{a}^2(x, y) + \sum_{b=1} ^ {cat} d_{b}^2(x, y)}  
 
-    where m is the number of features or attributes.
+    where `num` is the list of continuous attributes, `cat` is the list of categorical ones and
+    `F` is the list of all attributes or features.
 
-    .. math:: d_{a}(x_{a}, y_{a}) = \left (   \frac {|x_{a} - y_{a}|} {4\sigma_a}   \right ) 
+    .. math::
+     
+        d_{a}^2(x, y) \\
+        &= normalized\_diff_a(x, y) \\
+        &= \left (   \frac {|x_{a} - y_{a}|} {4\sigma_a}   \right ) ^2
 
     Implemented in :py:func:`smote_likes.distance_metrics.normalized_diff`
 
-    .. math:: d_{b}(x_{b}, y_{b}) = \sqrt {\sum_{c=1}^{C} \left ( \left | \frac {N_{a,x,c}} {N_{a,x}} - \frac {N_{a,y,c}} {N_{a,y}}   \right |  \right ) ^2 }
+    .. math:: 
+    
+        d_{b}^2(x, y) \\
+        &= normalized\_vdm_b(x, y) \\
+        &= \sqrt {\sum_{c=1}^{C} \left | \frac {N_{b,x,c}} {N_{b,x}} - \frac {N_{b,y,c}} {N_{b,y}}   \right | ^2 }^2
 
-    where C is the list of classes or targets.
+    where `C` is the list of classes or targets.
     Implemented in :py:func:`smote_likes.distance_metrics.normalized_vdm_2`
 
     """
 
     # TODO: check whether correct formula is shown in Notes
     # TODO: check whether formula shown matches code
+    # TODO: add tests including missing x_num or x_cat 
     if ind_cat_cols is None:
         ind_cat_cols = []
+
+    n_obs = X.shape[0]
+
     if y is None:
-        y = numpy.ones(shape=(X.shape[0],))
+        y = numpy.ones(shape=(n_obs,))
 
     x_num, x_cat = _split_arrays(X, ind_cat_cols)
 
-    # TODO: more efficient if any of x_num, x_cat is empty
+    if x_num.size == 0 and x_cat.size == 0:
+        raise ValueError("Splitting X into continuous \
+            and discrete returned empty arrays.")
 
-    # square result s.t. it can be summed with cat_dist;
-    # after that the sqrt is taken
+    if x_num.size == 0:
+        x_num_dist = numpy.zeros(shape=(n_obs, n_obs))
+    else:
+        x_num_dist = normalized_diff(X=x_num)
 
-    x_num_dist = normalized_diff(x_num)
-    x_cat_dist = normalized_vdm_2(x_cat, target)
+    if x_cat.size == 0:
+        x_cat_dist = numpy.zeros(shape=(n_obs, n_obs))
+    else:
+        x_cat_dist = normalized_vdm_2(X=x_cat, y=y)
+
+    x_dist = numpy.sqrt(x_num_dist + x_cat_dist)
+    return x_dist
+
+
+def discretize_columns(X, s):
+    # TODO: documentation
+    # TODO: tests
+    widths = _get_all_interval_widths(X, s)
+    all_cols = []
+    for col in range(X.shape[1]):
+        z = _discretize_column(
+            X[:, col], s, widths[0, col], widths[1, col], widths[2, col])
+        all_cols.append(z)
+    return numpy.stack(all_cols, 1)
+
+
+def ivdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None):
+    # TODO: documentation
+    # TODO: tests
+    # TODO: check whether correct formula is shown in Notes
+    # TODO: check whether formula shown matches code
+    if ind_cat_cols is None:
+        ind_cat_cols = []
+
+    n_obs = X.shape[0]
+
+    if y is None:
+        y = numpy.ones(shape=(n_obs,))
+
+    x_num, x_cat = _split_arrays(X, ind_cat_cols)
+
+    if x_num.size == 0 and x_cat.size == 0:
+        raise ValueError("Splitting X into continuous \
+            and discrete returned empty arrays.")
+
+    if x_num.size == 0:
+        x_num_dist = numpy.zeros(shape=(n_obs, n_obs))
+    else:
+        s = max(5, (numpy.unique(y)).shape[0])
+        x_num_discrete = discretize_columns(X=x_num, s=s)
+        x_num_dist = normalized_vdm_2(X=x_num_discrete, y=y)
+
+    if x_cat.size == 0:
+        x_cat_dist = numpy.zeros(shape=(n_obs, n_obs))
+    else:
+        x_cat_dist = normalized_vdm_2(X=x_cat, y=y)
+
     x_dist = numpy.sqrt(x_num_dist + x_cat_dist)
     return x_dist
 
@@ -85,7 +146,7 @@ def normalized_diff(X: numpy.ndarray) -> numpy.ndarray:
     Parameters
     ----------
     X : numpy.ndarray
-        [description]
+        Feature matrix with dimensions (observations, features).
 
     Returns
     -------
@@ -99,7 +160,13 @@ def normalized_diff(X: numpy.ndarray) -> numpy.ndarray:
     attribute distances are themselves squared when used in the HVDM function.
 
     .. math:: 
-        d_{a}(x_{a}, y_{a}) = \left (   \frac {|x_{a} - y_{a}|} {4\sigma_a}   \right ) 
+        normalized\_diff(x, y) \\
+        &= \sum_{a=1}^{num} normalized\_diff_a(x, y) \\
+        &= \sum_{a=1}^{num} \left (\frac {|x_{a} - y_{a}|} {4\sigma_a}\right ) ^2
+        
+    where `num` is the list of continuous attributes. Corresponds to 
+    :math:`\sum_{a=1}^{num} d_{a}^2(x, y)` 
+    from :py:func:`smote_likes.distance_metrics.hvdm`.
 
     """
 
@@ -107,12 +174,11 @@ def normalized_diff(X: numpy.ndarray) -> numpy.ndarray:
     # TODO: check whether formula shown matches code
     x_num_sd = numpy.std(X, axis=0, keepdims=True)
     x_num_normalzied = numpy.divide(X, (4*x_num_sd))
-    x_num_sqrt_dist = pairwise_distances(
+    x_num_dist = pairwise_distances(
         X=x_num_normalzied,
         metric='euclidean',
         squared=True
     )
-    # x_num_dist = numpy.square(x_num_sqrt_dist)
     return x_num_dist
 
 
@@ -131,38 +197,10 @@ def _discretize_column(x, s, w_a, max_a, min_a):
     return numpy.where(x == max_a, s, numpy.ceil((x-min_a)/w_a)+1)
 
 
-def discretize_columns(X, s):
-    # TODO: documentation
-    # TODO: tests
-    widths = _get_all_interval_widths(X, s)
-    all_cols = []
-    for col in range(X.shape[1]):
-        z = _discretize_column(
-            X[:, col], s, widths[0, col], widths[1, col], widths[2, col])
-        all_cols.append(z)
-    return numpy.stack(all_cols, 1)
+def _split_arrays(arr, ind_cat_cols):
+    ind_num_cols = [i for i in range(arr.shape[1]) if i not in ind_cat_cols]
 
+    arr_cat = arr[:, ind_cat_cols]
+    arr_num = arr[:, ind_num_cols]
 
-def ivdm(X: numpy.ndarray, target, ind_cat_cols: list = None):
-    # TODO: documentation
-    # TODO: tests
-    # TODO: check whether correct formula is shown in Notes
-    # TODO: check whether formula shown matches code
-    if ind_cat_cols is None:
-        ind_cat_cols = []
-    # if y is None:
-    only_x = True
-
-    x_num, x_cat = _split_arrays(X, ind_cat_cols)
-
-    # TODO: more efficient if any of x_num, x_cat is empty
-    if only_x:
-        # square result s.t. it can be summed with cat_dist;
-        # after that the sqrt is taken
-        s = max(5, (numpy.unique(target)).shape[0])
-        x_num_discrete = discretize_columns(X=x_num, s=s)
-        x_num_dist = normalized_vdm_2(X=x_num_discrete, target=target)
-        x_cat_dist = normalized_vdm_2(X=x_cat, target=target)
-
-    x_dist = numpy.sqrt(x_num_dist + x_cat_dist)
-    return x_dist
+    return arr_num, arr_cat

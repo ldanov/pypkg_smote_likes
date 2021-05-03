@@ -1,0 +1,186 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>smote_likes Description &#8212; smote_likes v0.1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="hvdm" href="api/smote_likes.distance_metrics.hvdm.html" />
+    <link rel="prev" title="README" href="readme.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-smote_likes.distance_metrics">
+<span id="smote-likes-description"></span><h1>smote_likes Description<a class="headerlink" href="#module-smote_likes.distance_metrics" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/smote_likes.distance_metrics.hvdm.html#smote_likes.distance_metrics.hvdm" title="smote_likes.distance_metrics.hvdm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hvdm</span></code></a>(X, target[, ind_cat_cols])</p></td>
+<td><p>Computes HVDM distance metric with normalized_vdm2 for categorical data</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/smote_likes.distance_metrics.normalized_diff.html#smote_likes.distance_metrics.normalized_diff" title="smote_likes.distance_metrics.normalized_diff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalized_diff</span></code></a>(X)</p></td>
+<td><p>Computes Normalised Difference Metric between continuous features</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/smote_likes.distance_metrics.normalized_vdm_2.html#smote_likes.distance_metrics.normalized_vdm_2" title="smote_likes.distance_metrics.normalized_vdm_2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalized_vdm_2</span></code></a>(X, target[, verbose])</p></td>
+<td><p>Computes Normalised Value Difference Metric 2</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/smote_likes.distance_metrics.nvdm2.html#smote_likes.distance_metrics.nvdm2" title="smote_likes.distance_metrics.nvdm2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nvdm2</span></code></a>(X, Y, cond_proba_list[, idist])</p></td>
+<td><p>Calculate the nvdm2 between two observations <span class="math notranslate nohighlight">\(\sum_{c=1}^{C} \left | P_{a,x,c} - P_{a,y,c} \right |^2\)</span> for c classes and a attributes</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/smote_likes.distance_metrics.get_cond_probas.html#smote_likes.distance_metrics.get_cond_probas" title="smote_likes.distance_metrics.get_cond_probas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_cond_probas</span></code></a>(X, target)</p></td>
+<td><p>Get a list of all conditional probabilities in each column of X</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/smote_likes.distance_metrics.NearestReferenceFeatures.html#smote_likes.distance_metrics.NearestReferenceFeatures" title="smote_likes.distance_metrics.NearestReferenceFeatures"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NearestReferenceFeatures</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<span class="target" id="module-smote_likes.synth_generator"></span></div>
+<div class="section" id="id1">
+<h2>Classes<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/smote_likes.synth_generator.protoSMOTE.html#smote_likes.synth_generator.protoSMOTE" title="smote_likes.synth_generator.protoSMOTE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">protoSMOTE</span></code></a>(sampling_strategy[, …])</p></td>
+<td><p>Class to perform over-sampling using SMOTE.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/smote_likes.synth_generator.restrictedSMOTE1.html#smote_likes.synth_generator.restrictedSMOTE1" title="smote_likes.synth_generator.restrictedSMOTE1"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restrictedSMOTE1</span></code></a>(sampling_strategy[, …])</p></td>
+<td><p>Class to perform over-sampling using SMOTE.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/smote_likes.synth_generator.restrictedSMOTE2.html#smote_likes.synth_generator.restrictedSMOTE2" title="smote_likes.synth_generator.restrictedSMOTE2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restrictedSMOTE2</span></code></a>(sampling_strategy[, …])</p></td>
+<td><p>Class to perform over-sampling using SMOTE.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api/smote_likes.synth_generator.restrictedSMOTE3.html#smote_likes.synth_generator.restrictedSMOTE3" title="smote_likes.synth_generator.restrictedSMOTE3"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restrictedSMOTE3</span></code></a>(sampling_strategy[, …])</p></td>
+<td><p>Class to perform over-sampling using SMOTE.</p></td>
+</tr>
+</tbody>
+</table>
+<p id="id2"><dl class="citation">
+<dt class="label" id="id3"><span class="brackets">WM97</span></dt>
+<dd><p>D. R. Wilson and T. R. Martinez. Improved heterogeneous distance functions. <em>Journal of Artificial Intelligence Research</em>, 6:1–34, jan 1997. <a class="reference external" href="https://doi.org/10.1613/jair.346">doi:10.1613/jair.346</a>.</p>
+</dd>
+</dl>
+</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">smote_likes</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">README</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">smote_likes Description</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#functions">Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Classes</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="readme.html" title="previous chapter">README</a></li>
+      <li>Next: <a href="api/smote_likes.distance_metrics.hvdm.html" title="next chapter">hvdm</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Lyubomir Danov.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/smote_likes.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
