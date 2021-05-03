@@ -14,9 +14,10 @@
 import itertools
 
 import numpy
+from sklearn.metrics import pairwise_distances
 
 
-def normalized_vdm_2(X, target, verbose:bool=False):
+def normalized_vdm_2(X, target, verbose: bool = False):
     r"""Computes Normalised Value Difference Metric 2
 
     Parameters
@@ -52,22 +53,29 @@ def normalized_vdm_2(X, target, verbose:bool=False):
     # TODO: check whether formula shown matches code
 
     cond_proba_list = get_cond_probas(X=X, target=target)
+    unique_targets = numpy.unique(target)
 
-    D = numpy.empty((X.shape[0], X.shape[0]))
-    for i1, i2 in itertools.product(range(X.shape[0]), range(X.shape[0])):
-        if verbose:
-            print(i1, i2)
-        if i1 == i2:
-            D[i1, i2] = 0
-            D[i2, i1] = 0
-        elif i1 < i2:
-            # if D[i1, i2] 
-            distance_vector = nvdm2(X[i1, :], X[i2, :], cond_proba_list)
-            D[i1, i2] = numpy.sum(distance_vector)
-            D[i2, i1] = D[i1, i2]
-        else:
-            continue
-    return D
+    list_pdist_per_class = []
+    for trgt in unique_targets:
+        all_cols = []
+        for col in range(X.shape[1]):
+            # return the conditional probabilties from the dictionary
+            # corresponding to each value in the column
+            P_ac = _remap_nparray_dict(X[:, col], cond_proba_list[col][trgt])
+            P_ac = P_ac.reshape(X.shape[0], 1)
+            all_cols.append(P_ac)
+        # X_P_c is the matrix of categorical features
+        # but each is replaced with the conditional 
+        # probability of the corresponding class
+        # and has shape (observations, attributes)
+        X_P_c = numpy.hstack(all_cols)
+        if not X.shape == X_P_c.shape:
+            Co
+        #  squared euclidean distance
+        pdist_c = pairwise_distances(X=X_P_c, metric='euclidean', squared=True)
+        list_pdist_per_class.append(pdist_c)
+
+    return sum(list_pdist_per_class)
 
 
 def nvdm2(X: numpy.ndarray, Y: numpy.ndarray, cond_proba_list: list, idist: bool = True) -> list:
@@ -118,15 +126,15 @@ def get_cond_probas(X: numpy.ndarray, target: numpy.ndarray) -> list:
     list
         Each entry contains the conditional probability :math:`P_{a,x,c}` 
         in a dictionary with following structure:
-          
+
         `target value -> attribute value -> attribute count`
     """
     cond_proba_list = []
-    if len(X.shape)!=2:
+    if len(X.shape) != 2:
         raise ValueError("Shape of X needs to be 2 dimensional")
     for cat_ind in range(X.shape[1]):
         cond_proba_list.append(_get_cond_proba(X[:, cat_ind], target))
-    
+
     return cond_proba_list
 
 
@@ -232,10 +240,17 @@ def _get_count_dict(vector: numpy.ndarray) -> dict:
         total_count[value[i]] = count[i]
     return total_count
 
-def _permutation_dict(keys0: list, keys1:list, value) -> dict:
+
+def _permutation_dict(keys0: list, keys1: list, value) -> dict:
     new_dict = {}
     for key0 in keys0:
         new_dict[key0] = {}
         for key1 in keys1:
             new_dict[key0][key1] = value
     return new_dict
+
+def _remap_nparray_dict(X, mapping):
+    new_X = numpy.ndarray(X.shape)
+    for key, value in mapping.items():
+        new_X[X == key] = mapping[key]
+    return new_X
