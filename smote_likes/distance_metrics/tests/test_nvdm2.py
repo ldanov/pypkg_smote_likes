@@ -8,7 +8,7 @@ from sklearn.datasets import load_breast_cancer
 from ..nvdm2 import get_cond_probas, normalized_vdm_2, nvdm2
 
 
-def get_simple_test_data():
+def _get_simple_test_data():
     X = numpy.array([[0, 0], [0, 1], [1, 1]])
     y = numpy.array(["a", "b", "b"])
     return X, y
@@ -24,13 +24,13 @@ def _generate_cats(X, ncol):
     return cat_vars
 
 
-def get_test_data_cats():
+def _get_test_data_cats():
     X, y = load_breast_cancer(return_X_y=True)
     cat_vars = _generate_cats(X, 5)
     return cat_vars, y
 
 
-def get_test_data_mixed():
+def _get_test_data_mixed():
     X, y = load_breast_cancer(return_X_y=True)
     cat_vars = _generate_cats(X, 5)
     all_vars = numpy.concatenate([cat_vars, X], axis=1)
@@ -38,7 +38,7 @@ def get_test_data_mixed():
 
 
 def test_nvdm2():
-    X_cat, target = get_test_data_cats()
+    X_cat, target = _get_test_data_cats()
     cond_probas = get_cond_probas(X_cat, target)
     res = nvdm2(X_cat[0, ], X_cat[1, ], cond_proba_list=cond_probas)
     exp = numpy.array([0.0, 0.048373274112422864,
@@ -47,7 +47,7 @@ def test_nvdm2():
 
 
 def test_normalized_vdm_2():
-    X_cat, target = get_test_data_cats()
+    X_cat, target = _get_test_data_cats()
     cond_probas = get_cond_probas(X_cat, target)
     exp = numpy.sum(nvdm2(X_cat[0, ], X_cat[1, ], cond_proba_list=cond_probas))
     all_dist = normalized_vdm_2(X_cat, target)
@@ -56,7 +56,7 @@ def test_normalized_vdm_2():
 
 def test_cget_cond_probas_all_attribs_exist():
     # Given
-    X_cat, target = get_test_data_cats()
+    X_cat, target = _get_test_data_cats()
     cond_probas = get_cond_probas(X_cat, target)
     unique_targets = numpy.unique(target)
 
@@ -70,7 +70,7 @@ def test_cget_cond_probas_all_attribs_exist():
 
 def test_cget_cond_probas_prob_sum_to_1():
     # Given
-    X_cat, target = get_test_data_cats()
+    X_cat, target = _get_test_data_cats()
     cond_probas = get_cond_probas(X_cat, target)
     unique_targets = numpy.unique(target)
 
