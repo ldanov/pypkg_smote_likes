@@ -1,6 +1,3 @@
-import random
-from string import ascii_lowercase
-
 import numpy
 import pandas
 from sklearn.datasets import load_breast_cancer
