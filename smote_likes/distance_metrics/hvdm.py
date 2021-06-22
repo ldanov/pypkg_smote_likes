@@ -5,7 +5,6 @@
 
 import numpy
 from sklearn.metrics import pairwise_distances
-from sklearn.neighbors import DistanceMetric
 
 from .nvdm2 import normalized_vdm_2
 
@@ -16,26 +15,28 @@ def hvdm(X: numpy.ndarray, y, ind_cat_cols: list = None):
     Parameters
     ----------
     X : numpy.ndarray
-        [description]
-    y : [type]
-        [description]
+        Feature matrix with dimensions (observations, features).
+    y : numpy.ndarray
+        Target class for each row in X.
     ind_cat_cols : list, optional
-        [description], by default None
+        List of indices of categorical columns.
+        If None assumes all are numeric, by default None.
 
     Returns
     -------
     numpy.ndarray
-        [description]
+        Pair-wise distance matrix of dimensions (observations, observations).
         Currently does not set distance for missing values to 0. 
-        Currently is only one target is given, all categorical distances are 0. 
-
+        TODO: set distance for missing values to 0.
+        Currently if only one target is given, all categorical distances are 0. 
+        TODO: handle only one class with :math:`\sum_{a=1}^{A} \left | P_{x,a} - P_{y,a} \right |^2`
 
     Notes
     -----
     Generalised Harmonious Value Difference Metric (HVDM)  see :cite:t:`Wilson1997`
 
     .. math:: 
-    
+
         hvdm(x,y)  \\
         &= \sqrt { \sum_{f=1} ^ {F} d_{f}^2(x, y) } \\
         &= \sqrt {\sum_{a=1} ^ {num} d_{a}^2(x, y) + \sum_{b=1} ^ {cat} d_{b}^2(x, y)}  
@@ -44,7 +45,7 @@ def hvdm(X: numpy.ndarray, y, ind_cat_cols: list = None):
     `F` is the list of all attributes or features.
 
     .. math::
-     
+
         d_{a}^2(x, y) \\
         &= normalized\_diff_a(x, y) \\
         &= \left (   \frac {|x_{a} - y_{a}|} {4\sigma_a}   \right ) ^2
@@ -52,7 +53,7 @@ def hvdm(X: numpy.ndarray, y, ind_cat_cols: list = None):
     Implemented in :py:func:`smote_likes.distance_metrics.normalized_diff`
 
     .. math:: 
-    
+
         d_{b}^2(x, y) \\
         &= normalized\_vdm_b(x, y) \\
         &= \sqrt {\sum_{c=1}^{C} \left | \frac {N_{b,x,c}} {N_{b,x}} - \frac {N_{b,y,c}} {N_{b,y}}   \right | ^2 }^2
@@ -64,7 +65,7 @@ def hvdm(X: numpy.ndarray, y, ind_cat_cols: list = None):
 
     # TODO: check whether correct formula is shown in Notes
     # TODO: check whether formula shown matches code
-    # TODO: add tests including missing x_num or x_cat 
+    # TODO: add tests including missing x_num or x_cat
     if ind_cat_cols is None:
         ind_cat_cols = []
 
@@ -94,6 +95,20 @@ def hvdm(X: numpy.ndarray, y, ind_cat_cols: list = None):
 
 
 def discretize_columns(X, s):
+    """[summary]
+
+    Parameters
+    ----------
+    X : [type]
+        [description]
+    s : [type]
+        [description]
+
+    Returns
+    -------
+    [type]
+        [description]
+    """    
     # TODO: documentation
     # TODO: tests
     widths = _get_all_interval_widths(X, s)
@@ -106,6 +121,27 @@ def discretize_columns(X, s):
 
 
 def ivdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None):
+    """[summary]
+
+    Parameters
+    ----------
+    X : numpy.ndarray
+        [description]
+    y : numpy.ndarray
+        [description]
+    ind_cat_cols : list, optional
+        [description], by default None
+
+    Returns
+    -------
+    numpy.ndarray
+        Pair-wise distance matrix of dimensions (observations, observations).
+
+    Raises
+    ------
+    ValueError
+        [description]
+    """    
     # TODO: documentation
     # TODO: tests
     # TODO: check whether correct formula is shown in Notes
@@ -151,7 +187,7 @@ def normalized_diff(X: numpy.ndarray) -> numpy.ndarray:
     Returns
     -------
     numpy.ndarray
-        A distance matrix of size (X_rows, X_rows)
+        Pair-wise distance matrix of dimensions (observations, observations).
 
     Notes
     -----
@@ -163,7 +199,7 @@ def normalized_diff(X: numpy.ndarray) -> numpy.ndarray:
         normalized\_diff(x, y) \\
         &= \sum_{a=1}^{num} normalized\_diff_a(x, y) \\
         &= \sum_{a=1}^{num} \left (\frac {|x_{a} - y_{a}|} {4\sigma_a}\right ) ^2
-        
+
     where `num` is the list of continuous attributes. Corresponds to 
     :math:`\sum_{a=1}^{num} d_{a}^2(x, y)` 
     from :py:func:`smote_likes.distance_metrics.hvdm`.
