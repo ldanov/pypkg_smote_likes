@@ -14,7 +14,7 @@ def _get_test_data_cats():
 def test_nvdm2():
     # Given
     X_cat, target = _get_test_data_cats()
-    
+
     # When
     cond_probas = get_cond_probas(X_cat, target)
     res = nvdm2(X_cat[0, ], X_cat[1, ], cond_proba_list=cond_probas)
@@ -28,7 +28,7 @@ def test_nvdm2():
 def test_normalized_vdm_2():
     # Given
     X_cat, target = _get_test_data_cats()
-    
+
     # When
     cond_probas = get_cond_probas(X_cat, target)
     exp = numpy.sum(nvdm2(X_cat[0, ], X_cat[1, ], cond_proba_list=cond_probas))
