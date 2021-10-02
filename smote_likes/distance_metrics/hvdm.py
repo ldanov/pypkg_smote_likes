@@ -4,9 +4,9 @@
 # License: -
 
 import numpy
-from sklearn.metrics import pairwise_distances
 
 from .nvdm2 import normalized_vdm_2
+from .continuous import discretize_columns, normalized_diff
 
 
 def hvdm(X: numpy.ndarray, y, ind_cat_cols: list = None):
@@ -94,42 +94,18 @@ def hvdm(X: numpy.ndarray, y, ind_cat_cols: list = None):
     return x_dist
 
 
-def discretize_columns(X, s):
-    """[summary]
-
-    Parameters
-    ----------
-    X : [type]
-        [description]
-    s : [type]
-        [description]
-
-    Returns
-    -------
-    [type]
-        [description]
-    """    
-    # TODO: documentation
-    # TODO: tests
-    widths = _get_all_interval_widths(X, s)
-    all_cols = []
-    for col in range(X.shape[1]):
-        z = _discretize_column(
-            X[:, col], s, widths[0, col], widths[1, col], widths[2, col])
-        all_cols.append(z)
-    return numpy.stack(all_cols, 1)
-
-
-def ivdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None):
+def dvdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None, overwrite_s: int = None):
     """[summary]
 
     Parameters
     ----------
     X : numpy.ndarray
-        [description]
+        Feature matrix with dimensions (observations, features).
     y : numpy.ndarray
-        [description]
+        Target class for each row in X.
     ind_cat_cols : list, optional
+        [description], by default None
+    overwrite_s: int, optional
         [description], by default None
 
     Returns
@@ -141,7 +117,7 @@ def ivdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None):
     ------
     ValueError
         [description]
-    """    
+    """
     # TODO: documentation
     # TODO: tests
     # TODO: check whether correct formula is shown in Notes
@@ -163,7 +139,8 @@ def ivdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None):
     if x_num.size == 0:
         x_num_dist = numpy.zeros(shape=(n_obs, n_obs))
     else:
-        s = max(5, (numpy.unique(y)).shape[0])
+        s = max(5, (numpy.unique(y)).shape[0]
+                ) if overwrite_s is None else overwrite_s
         x_num_discrete = discretize_columns(X=x_num, s=s)
         x_num_dist = normalized_vdm_2(X=x_num_discrete, y=y)
 
@@ -174,63 +151,6 @@ def ivdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None):
 
     x_dist = numpy.sqrt(x_num_dist + x_cat_dist)
     return x_dist
-
-
-def normalized_diff(X: numpy.ndarray) -> numpy.ndarray:
-    r"""Computes Normalised Difference Metric between continuous features
-
-    Parameters
-    ----------
-    X : numpy.ndarray
-        Feature matrix with dimensions (observations, features).
-
-    Returns
-    -------
-    numpy.ndarray
-        Pair-wise distance matrix of dimensions (observations, observations).
-
-    Notes
-    -----
-    Based on normalized_vdm2 (Equation 15) from :cite:t:`Wilson1997`. 
-    As per the paper the square root is not taken, because the individual 
-    attribute distances are themselves squared when used in the HVDM function.
-
-    .. math:: 
-        normalized\_diff(x, y) \\
-        &= \sum_{a=1}^{num} normalized\_diff_a(x, y) \\
-        &= \sum_{a=1}^{num} \left (\frac {|x_{a} - y_{a}|} {4\sigma_a}\right ) ^2
-
-    where `num` is the list of continuous attributes. Corresponds to 
-    :math:`\sum_{a=1}^{num} d_{a}^2(x, y)` 
-    from :py:func:`smote_likes.distance_metrics.hvdm`.
-
-    """
-
-    # TODO: check whether correct formula is shown in Notes
-    # TODO: check whether formula shown matches code
-    x_num_sd = numpy.std(X, axis=0, keepdims=True)
-    x_num_normalzied = numpy.divide(X, (4*x_num_sd))
-    x_num_dist = pairwise_distances(
-        X=x_num_normalzied,
-        metric='euclidean',
-        squared=True
-    )
-    return x_num_dist
-
-
-def _generate_interval_width(a, s):
-    max_a = numpy.max(a)
-    min_a = numpy.min(a)
-    w_a = numpy.abs(numpy.max(a) - numpy.min(a)) / s
-    return (w_a, max_a, min_a)
-
-
-def _get_all_interval_widths(X, s):
-    return numpy.apply_along_axis(_generate_interval_width, 0, X, s=s)
-
-
-def _discretize_column(x, s, w_a, max_a, min_a):
-    return numpy.where(x == max_a, s, numpy.ceil((x-min_a)/w_a)+1)
 
 
 def _split_arrays(arr, ind_cat_cols):
