@@ -17,6 +17,7 @@ def discretize_columns(X, s) -> numpy.ndarray:
         Note: should only contain continuous features.
     s : int
         Number of categories to group all elements of a feature into.
+        Needs to be larger than 0.
 
     Returns
     -------
@@ -36,7 +37,12 @@ def discretize_columns(X, s) -> numpy.ndarray:
         \end{cases}
 
     """
-    # TODO: tests
+    if not isinstance(s, int):
+        t = type(s)
+        raise ValueError("s needs to be int, but is {}".format(t))
+    if not s>0:
+        raise ValueError("s needs to be larger than 0, but is {}".format(s))
+    
     widths = _get_all_interval_widths(X, s)
     all_cols = []
     for col in range(X.shape[1]):

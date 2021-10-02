@@ -12,19 +12,29 @@ def _get_test_data_cats():
 
 
 def test_nvdm2():
+    # Given
     X_cat, target = _get_test_data_cats()
+    
+    # When
     cond_probas = get_cond_probas(X_cat, target)
     res = nvdm2(X_cat[0, ], X_cat[1, ], cond_proba_list=cond_probas)
     exp = numpy.array([0.0, 0.048373274112422864,
                       0.0, 0.0, 0.43370672772376007])
+
+    # Then
     assert numpy.allclose(res, exp)
 
 
 def test_normalized_vdm_2():
+    # Given
     X_cat, target = _get_test_data_cats()
+    
+    # When
     cond_probas = get_cond_probas(X_cat, target)
     exp = numpy.sum(nvdm2(X_cat[0, ], X_cat[1, ], cond_proba_list=cond_probas))
     all_dist = normalized_vdm_2(X_cat, target)
+
+    # Then
     assert numpy.allclose(all_dist[0, 1], exp)
 
 
