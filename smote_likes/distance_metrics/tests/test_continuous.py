@@ -7,7 +7,6 @@ from ..continuous import discretize_columns, normalized_diff
 
 def _get_simple_test_data_2():
     X = numpy.array([[0, 0], [0, 1], [1, 1], [2, 2], [2, 3], [2, 4]])
-    # y = numpy.array(["a", "b", "b"])
     return X
 
 
@@ -54,5 +53,37 @@ def test_discretize_columns_sign_error():
         discretize_columns(X, s)
 
 
-def test_normalized_diff():
-    raise AssertionError("no test yet")
+def test_normalized_diff1():
+    # Given
+    X = _get_simple_test_data_2()
+
+    # When
+    exp = numpy.array([[0., 0.03461538, 0.11220159, 0.44880637,
+                        0.62188329, 0.86419098],
+                       [0.03461538, 0., 0.07758621,
+                           0.34496021, 0.44880637, 0.62188329],
+                       [0.11220159, 0.07758621, 0.,
+                           0.11220159, 0.21604775, 0.38912467],
+                       [0.44880637, 0.34496021, 0.11220159,
+                           0., 0.03461538, 0.13846154],
+                       [0.62188329, 0.44880637, 0.21604775,
+                           0.03461538, 0., 0.03461538],
+                       [0.86419098, 0.62188329, 0.38912467,
+                       0.13846154, 0.03461538, 0.]])
+    res = normalized_diff(X)
+    # Then
+    assert numpy.allclose(res, exp)
+
+
+def test_normalized_diff2():
+    # Given
+    X = numpy.array([[0, 1], [1, 1], [1, 0], [0, 0]])
+
+    # When
+    exp = numpy.array([[0.  , 0.25, 0.5 , 0.25],
+       [0.25, 0.  , 0.25, 0.5 ],
+       [0.5 , 0.25, 0.  , 0.25],
+       [0.25, 0.5 , 0.25, 0.  ]])
+    res = normalized_diff(X)
+    # Then
+    assert numpy.allclose(res, exp)

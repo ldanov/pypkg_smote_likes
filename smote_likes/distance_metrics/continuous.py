@@ -4,7 +4,7 @@
 # License: -
 
 import numpy
-from sklearn.metrics import pairwise_distances
+from sklearn.metrics import euclidean_distances
 
 
 def discretize_columns(X, s) -> numpy.ndarray:
@@ -75,21 +75,20 @@ def normalized_diff(X: numpy.ndarray) -> numpy.ndarray:
     .. math:: 
         normalized\_diff(x, y) \\
         &= \sum_{a=1}^{num} normalized\_diff_a(x, y) \\
-        &= \sum_{a=1}^{num} \left (\frac {|x_{a} - y_{a}|} {4\sigma_a}\right ) ^2
+        &= \sum_{a=1}^{num} \left (\frac {|x_{a} - y_{a}|} {4\sigma_a}\right ) ^2 \\
+        & = \sum_{a=1}^{num} \left(\left| \frac {x_{a}} {4\sigma_a} - \frac {y_{a}} {4\sigma_a} \right|\right) ^2
 
     where `num` is the list of continuous attributes. Corresponds to 
     :math:`\sum_{a=1}^{num} d_{a}^2(x, y)` 
     from :py:func:`smote_likes.distance_metrics.hvdm`.
 
     """
-    # Note: only basic tests as implementation heavily based on numpy
-    # TODO: check whether correct formula is shown in Notes
-    # TODO: check whether formula shown matches code
     x_num_sd = numpy.std(X, axis=0, keepdims=True)
-    x_num_normalzied = numpy.divide(X, (4*x_num_sd))
-    x_num_dist = pairwise_distances(
+    dispersion = numpy.where(x_num_sd == 0, 1, 4*x_num_sd)
+    
+    x_num_normalzied = numpy.divide(X, dispersion)
+    x_num_dist = euclidean_distances(
         X=x_num_normalzied,
-        metric='euclidean',
         squared=True
     )
     return x_num_dist
