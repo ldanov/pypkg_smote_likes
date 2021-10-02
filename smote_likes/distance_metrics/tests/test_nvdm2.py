@@ -1,31 +1,14 @@
 import numpy
-import pandas
 from sklearn.datasets import load_breast_cancer
 
 from ..nvdm2 import get_cond_probas, normalized_vdm_2, nvdm2
-
-
-def _generate_cats(X, ncol):
-    cat_vars = []
-    for x in range(ncol):
-        attrib = pandas.qcut(X[:, x], q=4, labels=False)
-        cat_vars.append(attrib)
-    cat_vars = numpy.array(cat_vars).transpose()
-    assert cat_vars.shape == (X.shape[0], ncol)
-    return cat_vars
+from .test_helper import _generate_cats
 
 
 def _get_test_data_cats():
     X, y = load_breast_cancer(return_X_y=True)
     cat_vars = _generate_cats(X, 5)
     return cat_vars, y
-
-
-def _get_test_data_mixed():
-    X, y = load_breast_cancer(return_X_y=True)
-    cat_vars = _generate_cats(X, 5)
-    all_vars = numpy.concatenate([cat_vars, X], axis=1)
-    return all_vars, y
 
 
 def test_nvdm2():
