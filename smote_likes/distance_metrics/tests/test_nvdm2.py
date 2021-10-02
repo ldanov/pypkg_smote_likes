@@ -5,12 +5,6 @@ from sklearn.datasets import load_breast_cancer
 from ..nvdm2 import get_cond_probas, normalized_vdm_2, nvdm2
 
 
-def _get_simple_test_data():
-    X = numpy.array([[0, 0], [0, 1], [1, 1]])
-    y = numpy.array(["a", "b", "b"])
-    return X, y
-
-
 def _generate_cats(X, ncol):
     cat_vars = []
     for x in range(ncol):
