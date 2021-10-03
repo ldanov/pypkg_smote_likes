@@ -9,8 +9,9 @@ from .nvdm2 import normalized_vdm_2
 from .continuous import discretize_columns, normalized_diff
 
 
-def hvdm(X: numpy.ndarray, y, ind_cat_cols: list = None):
-    r"""Computes HVDM distance metric with normalized_vdm2 for categorical data
+def hvdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None):
+    r"""Computes HVDM distance metric with normalized_vdm_2 for categorical data
+    and normalized_diff for numeric.
 
     Parameters
     ----------
@@ -26,10 +27,15 @@ def hvdm(X: numpy.ndarray, y, ind_cat_cols: list = None):
     -------
     numpy.ndarray
         Pair-wise distance matrix of dimensions (observations, observations).
-        Currently does not set distance for missing values to 0. 
-        TODO: set distance for missing values to 0.
+        Currently does not set distance for missing values to 0 as per paper. 
+        TODO: handle missing values
         Currently if only one target is given, all categorical distances are 0. 
         TODO: handle only one class with :math:`\sum_{a=1}^{A} \left | P_{x,a} - P_{y,a} \right |^2`
+
+    Raises
+    ------
+    ValueError
+        Raised when splitting X into two matrices (one for continuous and categorical each) fails.
 
     Notes
     -----
@@ -47,7 +53,7 @@ def hvdm(X: numpy.ndarray, y, ind_cat_cols: list = None):
     .. math::
 
         d_{a}^2(x, y) \\
-        &= normalized\_diff_a(x, y) \\
+        &= normalized\_diff_a{^2}(x, y) \\
         &= \left (   \frac {|x_{a} - y_{a}|} {4\sigma_a}   \right ) ^2
 
     Implemented in :py:func:`smote_likes.distance_metrics.normalized_diff`
@@ -55,16 +61,13 @@ def hvdm(X: numpy.ndarray, y, ind_cat_cols: list = None):
     .. math:: 
 
         d_{b}^2(x, y) \\
-        &= normalized\_vdm_b(x, y) \\
-        &= \sqrt {\sum_{c=1}^{C} \left | \frac {N_{b,x,c}} {N_{b,x}} - \frac {N_{b,y,c}} {N_{b,y}}   \right | ^2 }^2
+        &= normalized\_vdm_b{^2}(x, y) \\
+        &= \sqrt {\sum_{c=1}^{C} \left | \frac {N_{b,x,c}} {N_{b,x}} - \frac {N_{b,y,c}} {N_{b,y}}   \right | ^2 } ^2
 
     where `C` is the list of classes or targets.
     Implemented in :py:func:`smote_likes.distance_metrics.normalized_vdm_2`
 
     """
-
-    # TODO: check whether correct formula is shown in Notes
-    # TODO: check whether formula shown matches code
     # TODO: add tests including missing x_num or x_cat
     if ind_cat_cols is None:
         ind_cat_cols = []
@@ -94,8 +97,9 @@ def hvdm(X: numpy.ndarray, y, ind_cat_cols: list = None):
     return x_dist
 
 
-def dvdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None, overwrite_s: int = None):
-    """[summary]
+def dvdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None, use_s: int = None):
+    r"""Computes DVDM distance metric with normalized_vdm2 
+    for all data after discretizing continuous data.
 
     Parameters
     ----------
@@ -104,9 +108,11 @@ def dvdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None, overwrit
     y : numpy.ndarray
         Target class for each row in X.
     ind_cat_cols : list, optional
-        [description], by default None
-    overwrite_s: int, optional
-        [description], by default None
+        List of indices of categorical columns.
+        If None assumes all are numeric, by default None.
+    use_s: int, optional
+        Number of discrete groups to be created for all continuous features.
+        If none s will be the larger of 5 and number of classes in y. By default None.
 
     Returns
     -------
@@ -116,12 +122,32 @@ def dvdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None, overwrit
     Raises
     ------
     ValueError
-        [description]
+        Raised when splitting X into two matrices (one for continuous and categorical each) fails.
+
+    Notes
+    -----
+    Discretized Value Difference Metric (HVDM)  see :cite:t:`Wilson1997`
+
+    .. math:: 
+
+        dvdm(x,y)  \\
+        &= \sqrt { \sum_{b=1} ^ {cat} d_{b}^2(x, y)} 
+
+    where `cat` is the list of categorical and numerical discretized to categorical 
+    features. The algorithm used for discretization is :py:func:`smote_likes.distance_metrics.discretize_columns`.
+
+    .. math::
+
+        d_{b}^2(x, y) \\
+        &= normalized\_vdm_b{^2}(x, y) \\
+        &= \sqrt {\sum_{c=1}^{C} \left | \frac {N_{b,x,c}} {N_{b,x}} - \frac {N_{b,y,c}} {N_{b,y}}   \right | ^2 } ^2
+
+    where `C` is the list of classes or targets.
+    Implemented in :py:func:`smote_likes.distance_metrics.normalized_vdm_2`
+
+    
+
     """
-    # TODO: documentation
-    # TODO: tests
-    # TODO: check whether correct formula is shown in Notes
-    # TODO: check whether formula shown matches code
     if ind_cat_cols is None:
         ind_cat_cols = []
 
@@ -140,7 +166,7 @@ def dvdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None, overwrit
         x_num_dist = numpy.zeros(shape=(n_obs, n_obs))
     else:
         s = max(5, (numpy.unique(y)).shape[0]
-                ) if overwrite_s is None else overwrite_s
+                ) if use_s is None else use_s
         x_num_discrete = discretize_columns(X=x_num, s=s)
         x_num_dist = normalized_vdm_2(X=x_num_discrete, y=y)
 
