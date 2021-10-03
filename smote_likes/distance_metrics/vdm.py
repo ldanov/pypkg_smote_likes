@@ -28,7 +28,6 @@ def hvdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None):
     numpy.ndarray
         Pair-wise distance matrix of dimensions (observations, observations).
         Currently does not set distance for missing values to 0 as per paper. 
-        TODO: handle missing values
         If only one target is given, all categorical distances are 0. See Notes for more information.
 
     Raises
