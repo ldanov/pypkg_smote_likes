@@ -1,5 +1,5 @@
 import numpy
-from sklearn.metrics import pairwise_distances
+from sklearn.metrics import euclidean_distances
 
 
 def normalized_vdm_2(X: numpy.ndarray, y: numpy.ndarray):
@@ -59,7 +59,7 @@ def normalized_vdm_2(X: numpy.ndarray, y: numpy.ndarray):
         for col in range(X.shape[1]):
             # return the conditional probabilties from the dictionary
             # corresponding to each value in the column
-            P_ac = _remap_nparray_dict(X[:, col], cond_proba_list[col][trgt])
+            P_ac = _remap_ndarray_dict(X[:, col], cond_proba_list[col][trgt])
             P_ac = P_ac.reshape(X.shape[0], 1)
             all_cols.append(P_ac)
         # X_P_c is the matrix of categorical features
@@ -71,7 +71,7 @@ def normalized_vdm_2(X: numpy.ndarray, y: numpy.ndarray):
             raise ShapeError("Internal transformation led to object malformation. \
                 Original shape: {}, current shape: {}".format(X.shape, X_P_c.shape))
         #  squared euclidean distance
-        pdist_c = pairwise_distances(X=X_P_c, metric='euclidean', squared=True)
+        pdist_c = euclidean_distances(X=X_P_c, squared=True)
         list_pdist_per_class.append(pdist_c)
 
     return sum(list_pdist_per_class)
@@ -255,7 +255,7 @@ def _permutation_dict(keys0: list, keys1: list, value) -> dict:
     return new_dict
 
 
-def _remap_nparray_dict(X, mapping):
+def _remap_ndarray_dict(X, mapping):
     new_X = numpy.ndarray(X.shape)
     for key, value in mapping.items():
         new_X[X == key] = mapping[key]
