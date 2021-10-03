@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>hvdm &#8212; smote_likes v0.1.0 documentation</title>
+    <title>dvdm &#8212; smote_likes v0.1.0 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -17,8 +17,8 @@
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="dvdm" href="smote_likes.distance_metrics.dvdm.html" />
-    <link rel="prev" title="smote_likes Description" href="../smote_likes.html" />
+    <link rel="next" title="discretize_columns" href="smote_likes.distance_metrics.discretize_columns.html" />
+    <link rel="prev" title="hvdm" href="smote_likes.distance_metrics.hvdm.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -35,13 +35,13 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="hvdm">
-<h1>hvdm<a class="headerlink" href="#hvdm" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dvdm">
+<h1>dvdm<a class="headerlink" href="#dvdm" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="smote_likes.distance_metrics.hvdm">
-<code class="sig-prename descclassname">smote_likes.distance_metrics.</code><code class="sig-name descname">hvdm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">y</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">ind_cat_cols</span><span class="p">:</span> <span class="n">list</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/smote_likes/distance_metrics/vdm.html#hvdm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#smote_likes.distance_metrics.hvdm" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes HVDM distance metric with normalized_vdm_2 for categorical data
-and normalized_diff for numeric.</p>
+<dt id="smote_likes.distance_metrics.dvdm">
+<code class="sig-prename descclassname">smote_likes.distance_metrics.</code><code class="sig-name descname">dvdm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">y</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">ind_cat_cols</span><span class="p">:</span> <span class="n">list</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">use_s</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/smote_likes/distance_metrics/vdm.html#dvdm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#smote_likes.distance_metrics.dvdm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes DVDM distance metric with normalized_vdm2
+for all data after discretizing continuous data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -49,32 +49,24 @@ and normalized_diff for numeric.</p>
 <li><p><strong>y</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – Target class for each row in X.</p></li>
 <li><p><strong>ind_cat_cols</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>, <em>optional</em>) – List of indices of categorical columns.
 If None assumes all are numeric, by default None.</p></li>
+<li><p><strong>use_s</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <em>optional</em>) – Number of discrete groups to be created for all continuous features.
+If none s will be the larger of 5 and number of classes in y. By default None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>numpy.ndarray</em> – Pair-wise distance matrix of dimensions (observations, observations).
-Currently does not set distance for missing values to 0 as per paper.
-TODO: handle missing values
-Currently if only one target is given, all categorical distances are 0.
-TODO: handle only one class with <span class="math notranslate nohighlight">\(\sum_{a=1}^{A} \left | P_{x,a} - P_{y,a} \right |^2\)</span></p>
+<dd class="field-even"><p><em>numpy.ndarray</em> – Pair-wise distance matrix of dimensions (observations, observations).</p>
 </dd>
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><p><strong>ValueError</strong> – Raised when splitting X into two matrices (one for continuous and categorical each) fails.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Generalised Harmonious Value Difference Metric (HVDM)  see <span id="id1">Wilson and Martinez [<a class="reference internal" href="../smote_likes.html#id3">WM97</a>]</span></p>
+<p>Discretized Value Difference Metric (HVDM)  see <span id="id1">Wilson and Martinez [<a class="reference internal" href="../smote_likes.html#id3">WM97</a>]</span></p>
 <div class="math notranslate nohighlight">
-\[\begin{split}hvdm(x,y)  \\
-&amp;= \sqrt { \sum_{f=1} ^ {F} d_{f}^2(x, y) } \\
-&amp;= \sqrt {\sum_{a=1} ^ {num} d_{a}^2(x, y) + \sum_{b=1} ^ {cat} d_{b}^2(x, y)}\end{split}\]</div>
-<p>where <cite>num</cite> is the list of continuous attributes, <cite>cat</cite> is the list of categorical ones and
-<cite>F</cite> is the list of all attributes or features.</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}d_{a}^2(x, y) \\
-&amp;= normalized\_diff_a{^2}(x, y) \\
-&amp;= \left (   \frac {|x_{a} - y_{a}|} {4\sigma_a}   \right ) ^2\end{split}\]</div>
-<p>Implemented in <a class="reference internal" href="smote_likes.distance_metrics.normalized_diff.html#smote_likes.distance_metrics.normalized_diff" title="smote_likes.distance_metrics.normalized_diff"><code class="xref py py-func docutils literal notranslate"><span class="pre">smote_likes.distance_metrics.normalized_diff()</span></code></a></p>
+\[\begin{split}dvdm(x,y)  \\
+&amp;= \sqrt { \sum_{b=1} ^ {cat} d_{b}^2(x, y)}\end{split}\]</div>
+<p>where <cite>cat</cite> is the list of categorical and numerical discretized to categorical
+features. The algorithm used for discretization is <a class="reference internal" href="smote_likes.distance_metrics.discretize_columns.html#smote_likes.distance_metrics.discretize_columns" title="smote_likes.distance_metrics.discretize_columns"><code class="xref py py-func docutils literal notranslate"><span class="pre">smote_likes.distance_metrics.discretize_columns()</span></code></a>.</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}d_{b}^2(x, y) \\
 &amp;= normalized\_vdm_b{^2}(x, y) \\
@@ -118,8 +110,8 @@ Implemented in <a class="reference internal" href="smote_likes.distance_metrics.
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="../smote_likes.html">smote_likes Description</a><ul>
-      <li>Previous: <a href="../smote_likes.html" title="previous chapter">smote_likes Description</a></li>
-      <li>Next: <a href="smote_likes.distance_metrics.dvdm.html" title="next chapter">dvdm</a></li>
+      <li>Previous: <a href="smote_likes.distance_metrics.hvdm.html" title="previous chapter">hvdm</a></li>
+      <li>Next: <a href="smote_likes.distance_metrics.discretize_columns.html" title="next chapter">discretize_columns</a></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -154,7 +146,7 @@ Implemented in <a class="reference internal" href="smote_likes.distance_metrics.
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
-      <a href="../_sources/api/smote_likes.distance_metrics.hvdm.rst.txt"
+      <a href="../_sources/api/smote_likes.distance_metrics.dvdm.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>normalized_diff &#8212; smote_likes v0.1.0 documentation</title>
+    <title>discretize_columns &#8212; smote_likes v0.1.0 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -17,8 +17,8 @@
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="normalized_vdm_2" href="smote_likes.distance_metrics.normalized_vdm_2.html" />
-    <link rel="prev" title="discretize_columns" href="smote_likes.distance_metrics.discretize_columns.html" />
+    <link rel="next" title="normalized_diff" href="smote_likes.distance_metrics.normalized_diff.html" />
+    <link rel="prev" title="dvdm" href="smote_likes.distance_metrics.dvdm.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -35,33 +35,33 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="normalized-diff">
-<h1>normalized_diff<a class="headerlink" href="#normalized-diff" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="discretize-columns">
+<h1>discretize_columns<a class="headerlink" href="#discretize-columns" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="smote_likes.distance_metrics.normalized_diff">
-<code class="sig-prename descclassname">smote_likes.distance_metrics.</code><code class="sig-name descname">normalized_diff</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="../_modules/smote_likes/distance_metrics/continuous.html#normalized_diff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#smote_likes.distance_metrics.normalized_diff" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes Normalised Difference Metric between continuous features</p>
+<dt id="smote_likes.distance_metrics.discretize_columns">
+<code class="sig-prename descclassname">smote_likes.distance_metrics.</code><code class="sig-name descname">discretize_columns</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">s</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="../_modules/smote_likes/distance_metrics/continuous.html#discretize_columns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#smote_likes.distance_metrics.discretize_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform a matrix of continuous into discrete features.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>X</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – Feature matrix with dimensions (observations, features).</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – Feature matrix with dimensions (observations, features).
+Note: should only contain continuous features.</p></li>
+<li><p><strong>s</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of categories to group all elements of a feature into.
+Needs to be larger than 0.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>numpy.ndarray</em> – Pair-wise distance matrix of dimensions (observations, observations).</p>
+<dd class="field-even"><p><em>numpy.ndarray</em> – Matrix of dimensions like original with values representing categories.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Based on normalized_diff (Equation 13) from <span id="id1">Wilson and Martinez [<a class="reference internal" href="../smote_likes.html#id3">WM97</a>]</span>.
-As per the paper the square root is not taken, because the individual
-attribute distances are themselves squared when used in the HVDM function.
-For overview see pp. 22.</p>
+<p>Discretizing of continuous values see eq. 18, pp.14 <span id="id1">Wilson and Martinez [<a class="reference internal" href="../smote_likes.html#id3">WM97</a>]</span></p>
 <div class="math notranslate nohighlight">
-\[\begin{split}normalized\_diff(x, y) \\
-&amp;= \sum_{a=1}^{num} normalized\_diff_a(x, y) \\
-&amp;= \sum_{a=1}^{num} \left (\frac {|x_{a} - y_{a}|} {4\sigma_a}\right ) ^2 \\
-&amp; = \sum_{a=1}^{num} \left(\left| \frac {x_{a}} {4\sigma_a} - \frac {y_{a}} {4\sigma_a} \right|\right) ^2\end{split}\]</div>
-<p>where <cite>num</cite> is the list of continuous attributes. Corresponds to
-<span class="math notranslate nohighlight">\(\sum_{a=1}^{num} d_{a}^2(x, y)\)</span>
-from <a class="reference internal" href="smote_likes.distance_metrics.hvdm.html#smote_likes.distance_metrics.hvdm" title="smote_likes.distance_metrics.hvdm"><code class="xref py py-func docutils literal notranslate"><span class="pre">smote_likes.distance_metrics.hvdm()</span></code></a>.</p>
+\[\begin{split}discretize_a(x) =
+\begin{cases}
+    s, \text{if $x=max_a$, else} \\
+    \lfloor (x-min_a)/w_a \rfloor+1
+\end{cases}\end{split}\]</div>
 </dd></dl>
 
 </div>
@@ -99,8 +99,8 @@ from <a class="reference internal" href="smote_likes.distance_metrics.hvdm.html#
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="../smote_likes.html">smote_likes Description</a><ul>
-      <li>Previous: <a href="smote_likes.distance_metrics.discretize_columns.html" title="previous chapter">discretize_columns</a></li>
-      <li>Next: <a href="smote_likes.distance_metrics.normalized_vdm_2.html" title="next chapter">normalized_vdm_2</a></li>
+      <li>Previous: <a href="smote_likes.distance_metrics.dvdm.html" title="previous chapter">dvdm</a></li>
+      <li>Next: <a href="smote_likes.distance_metrics.normalized_diff.html" title="next chapter">normalized_diff</a></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -135,7 +135,7 @@ from <a class="reference internal" href="smote_likes.distance_metrics.hvdm.html#
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
-      <a href="../_sources/api/smote_likes.distance_metrics.normalized_diff.rst.txt"
+      <a href="../_sources/api/smote_likes.distance_metrics.discretize_columns.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

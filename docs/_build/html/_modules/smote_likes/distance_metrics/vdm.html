@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>smote_likes.distance_metrics.hvdm &#8212; smote_likes v0.1.0 documentation</title>
+    <title>smote_likes.distance_metrics.vdm &#8212; smote_likes v0.1.0 documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -33,7 +33,7 @@
 
           <div class="body" role="main">
             
-  <h1>Source code for smote_likes.distance_metrics.hvdm</h1><div class="highlight"><pre>
+  <h1>Source code for smote_likes.distance_metrics.vdm</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python3</span>
 
 <span class="c1"># Authors: Lyubomir Danov &lt;-&gt;</span>
@@ -45,8 +45,9 @@
 <span class="kn">from</span> <span class="nn">.continuous</span> <span class="kn">import</span> <span class="n">discretize_columns</span><span class="p">,</span> <span class="n">normalized_diff</span>
 
 
-<div class="viewcode-block" id="hvdm"><a class="viewcode-back" href="../../../api/smote_likes.distance_metrics.hvdm.html#smote_likes.distance_metrics.hvdm">[docs]</a><span class="k">def</span> <span class="nf">hvdm</span><span class="p">(</span><span class="n">X</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">ind_cat_cols</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Computes HVDM distance metric with normalized_vdm2 for categorical data</span>
+<div class="viewcode-block" id="hvdm"><a class="viewcode-back" href="../../../api/smote_likes.distance_metrics.hvdm.html#smote_likes.distance_metrics.hvdm">[docs]</a><span class="k">def</span> <span class="nf">hvdm</span><span class="p">(</span><span class="n">X</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">ind_cat_cols</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Computes HVDM distance metric with normalized_vdm_2 for categorical data</span>
+<span class="sd">    and normalized_diff for numeric.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -62,10 +63,15 @@
 <span class="sd">    -------</span>
 <span class="sd">    numpy.ndarray</span>
 <span class="sd">        Pair-wise distance matrix of dimensions (observations, observations).</span>
-<span class="sd">        Currently does not set distance for missing values to 0. </span>
-<span class="sd">        TODO: set distance for missing values to 0.</span>
+<span class="sd">        Currently does not set distance for missing values to 0 as per paper. </span>
+<span class="sd">        TODO: handle missing values</span>
 <span class="sd">        Currently if only one target is given, all categorical distances are 0. </span>
 <span class="sd">        TODO: handle only one class with :math:`\sum_{a=1}^{A} \left | P_{x,a} - P_{y,a} \right |^2`</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Raised when splitting X into two matrices (one for continuous and categorical each) fails.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -83,7 +89,7 @@
 <span class="sd">    .. math::</span>
 
 <span class="sd">        d_{a}^2(x, y) \\</span>
-<span class="sd">        &amp;= normalized\_diff_a(x, y) \\</span>
+<span class="sd">        &amp;= normalized\_diff_a{^2}(x, y) \\</span>
 <span class="sd">        &amp;= \left (   \frac {|x_{a} - y_{a}|} {4\sigma_a}   \right ) ^2</span>
 
 <span class="sd">    Implemented in :py:func:`smote_likes.distance_metrics.normalized_diff`</span>
@@ -91,16 +97,13 @@
 <span class="sd">    .. math:: </span>
 
 <span class="sd">        d_{b}^2(x, y) \\</span>
-<span class="sd">        &amp;= normalized\_vdm_b(x, y) \\</span>
-<span class="sd">        &amp;= \sqrt {\sum_{c=1}^{C} \left | \frac {N_{b,x,c}} {N_{b,x}} - \frac {N_{b,y,c}} {N_{b,y}}   \right | ^2 }^2</span>
+<span class="sd">        &amp;= normalized\_vdm_b{^2}(x, y) \\</span>
+<span class="sd">        &amp;= \sqrt {\sum_{c=1}^{C} \left | \frac {N_{b,x,c}} {N_{b,x}} - \frac {N_{b,y,c}} {N_{b,y}}   \right | ^2 } ^2</span>
 
 <span class="sd">    where `C` is the list of classes or targets.</span>
 <span class="sd">    Implemented in :py:func:`smote_likes.distance_metrics.normalized_vdm_2`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="c1"># TODO: check whether correct formula is shown in Notes</span>
-    <span class="c1"># TODO: check whether formula shown matches code</span>
     <span class="c1"># TODO: add tests including missing x_num or x_cat</span>
     <span class="k">if</span> <span class="n">ind_cat_cols</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">ind_cat_cols</span> <span class="o">=</span> <span class="p">[]</span>
@@ -130,7 +133,7 @@
     <span class="k">return</span> <span class="n">x_dist</span></div>
 
 
-<div class="viewcode-block" id="dvdm"><a class="viewcode-back" href="../../../api/smote_likes.distance_metrics.dvdm.html#smote_likes.distance_metrics.dvdm">[docs]</a><span class="k">def</span> <span class="nf">dvdm</span><span class="p">(</span><span class="n">X</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">ind_cat_cols</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">overwrite_s</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="dvdm"><a class="viewcode-back" href="../../../api/smote_likes.distance_metrics.dvdm.html#smote_likes.distance_metrics.dvdm">[docs]</a><span class="k">def</span> <span class="nf">dvdm</span><span class="p">(</span><span class="n">X</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">ind_cat_cols</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">use_s</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Computes DVDM distance metric with normalized_vdm2 </span>
 <span class="sd">    for all data after discretizing continuous data.</span>
 
@@ -141,9 +144,11 @@
 <span class="sd">    y : numpy.ndarray</span>
 <span class="sd">        Target class for each row in X.</span>
 <span class="sd">    ind_cat_cols : list, optional</span>
-<span class="sd">        [description], by default None</span>
-<span class="sd">    overwrite_s: int, optional</span>
-<span class="sd">        [description], by default None</span>
+<span class="sd">        List of indices of categorical columns.</span>
+<span class="sd">        If None assumes all are numeric, by default None.</span>
+<span class="sd">    use_s: int, optional</span>
+<span class="sd">        Number of discrete groups to be created for all continuous features.</span>
+<span class="sd">        If none s will be the larger of 5 and number of classes in y. By default None.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -153,12 +158,32 @@
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    ValueError</span>
-<span class="sd">        [description]</span>
+<span class="sd">        Raised when splitting X into two matrices (one for continuous and categorical each) fails.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Discretized Value Difference Metric (HVDM)  see :cite:t:`Wilson1997`</span>
+
+<span class="sd">    .. math:: </span>
+
+<span class="sd">        dvdm(x,y)  \\</span>
+<span class="sd">        &amp;= \sqrt { \sum_{b=1} ^ {cat} d_{b}^2(x, y)} </span>
+
+<span class="sd">    where `cat` is the list of categorical and numerical discretized to categorical </span>
+<span class="sd">    features. The algorithm used for discretization is :py:func:`smote_likes.distance_metrics.discretize_columns`.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        d_{b}^2(x, y) \\</span>
+<span class="sd">        &amp;= normalized\_vdm_b{^2}(x, y) \\</span>
+<span class="sd">        &amp;= \sqrt {\sum_{c=1}^{C} \left | \frac {N_{b,x,c}} {N_{b,x}} - \frac {N_{b,y,c}} {N_{b,y}}   \right | ^2 } ^2</span>
+
+<span class="sd">    where `C` is the list of classes or targets.</span>
+<span class="sd">    Implemented in :py:func:`smote_likes.distance_metrics.normalized_vdm_2`</span>
+
+<span class="sd">    </span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># TODO: documentation</span>
-    <span class="c1"># TODO: tests</span>
-    <span class="c1"># TODO: check whether correct formula is shown in Notes</span>
-    <span class="c1"># TODO: check whether formula shown matches code</span>
     <span class="k">if</span> <span class="n">ind_cat_cols</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">ind_cat_cols</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -177,7 +202,7 @@
         <span class="n">x_num_dist</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n_obs</span><span class="p">,</span> <span class="n">n_obs</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">s</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y</span><span class="p">))</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="p">)</span> <span class="k">if</span> <span class="n">overwrite_s</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">overwrite_s</span>
+                <span class="p">)</span> <span class="k">if</span> <span class="n">use_s</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">use_s</span>
         <span class="n">x_num_discrete</span> <span class="o">=</span> <span class="n">discretize_columns</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">x_num</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">)</span>
         <span class="n">x_num_dist</span> <span class="o">=</span> <span class="n">normalized_vdm_2</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">x_num_discrete</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
 
