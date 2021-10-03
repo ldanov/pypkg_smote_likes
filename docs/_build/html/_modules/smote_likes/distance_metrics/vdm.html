@@ -65,8 +65,7 @@
 <span class="sd">        Pair-wise distance matrix of dimensions (observations, observations).</span>
 <span class="sd">        Currently does not set distance for missing values to 0 as per paper. </span>
 <span class="sd">        TODO: handle missing values</span>
-<span class="sd">        Currently if only one target is given, all categorical distances are 0. </span>
-<span class="sd">        TODO: handle only one class with :math:`\sum_{a=1}^{A} \left | P_{x,a} - P_{y,a} \right |^2`</span>
+<span class="sd">        If only one target is given, all categorical distances are 0. See Notes for more information.</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
@@ -103,8 +102,16 @@
 <span class="sd">    where `C` is the list of classes or targets.</span>
 <span class="sd">    Implemented in :py:func:`smote_likes.distance_metrics.normalized_vdm_2`</span>
 
+<span class="sd">    Note: If only one target is given, all categorical distances are 0 because any :math:`\frac {N_{b,x,c}} {N_{b,x}} = 1`. </span>
+<span class="sd">    </span>
+<span class="sd">    .. math:: </span>
+<span class="sd">    </span>
+<span class="sd">        \sum_{a=1}^{A} \left | P_{x,a} - P_{y,a} \right | ^2 = \\</span>
+<span class="sd">        \sqrt {\sum_{c=1}^{C} \left | \frac {N_{b,x,c}} {N_{b,x}} - \frac {N_{b,y,c}} {N_{b,y}}   \right | ^2 } ^2 = \\</span>
+<span class="sd">        \sqrt {\sum_{}^{1} \left | 1 - 1 \right | ^2 } ^2</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># TODO: add tests including missing x_num or x_cat</span>
+    <span class="c1"># TODO: handle missing values in x_num or x_cat</span>
     <span class="k">if</span> <span class="n">ind_cat_cols</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">ind_cat_cols</span> <span class="o">=</span> <span class="p">[]</span>
 

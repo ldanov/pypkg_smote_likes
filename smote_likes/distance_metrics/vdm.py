@@ -29,8 +29,7 @@ def hvdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None):
         Pair-wise distance matrix of dimensions (observations, observations).
         Currently does not set distance for missing values to 0 as per paper. 
         TODO: handle missing values
-        Currently if only one target is given, all categorical distances are 0. 
-        TODO: handle only one class with :math:`\sum_{a=1}^{A} \left | P_{x,a} - P_{y,a} \right |^2`
+        If only one target is given, all categorical distances are 0. See Notes for more information.
 
     Raises
     ------
@@ -67,8 +66,16 @@ def hvdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None):
     where `C` is the list of classes or targets.
     Implemented in :py:func:`smote_likes.distance_metrics.normalized_vdm_2`
 
+    Note: If only one target is given, all categorical distances are 0 because any :math:`\frac {N_{b,x,c}} {N_{b,x}} = 1`. 
+
+    .. math:: 
+
+        \sum_{a=1}^{A} \left | P_{x,a} - P_{y,a} \right | ^2 = \\
+        \sqrt {\sum_{c=1}^{C} \left | \frac {N_{b,x,c}} {N_{b,x}} - \frac {N_{b,y,c}} {N_{b,y}}   \right | ^2 } ^2 = \\
+        \sqrt {\sum_{}^{1} \left | 1 - 1 \right | ^2 } ^2
+
     """
-    # TODO: add tests including missing x_num or x_cat
+    # TODO: handle missing values in x_num or x_cat
     if ind_cat_cols is None:
         ind_cat_cols = []
 
@@ -145,7 +152,7 @@ def dvdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None, use_s: i
     where `C` is the list of classes or targets.
     Implemented in :py:func:`smote_likes.distance_metrics.normalized_vdm_2`
 
-    
+
 
     """
     if ind_cat_cols is None:

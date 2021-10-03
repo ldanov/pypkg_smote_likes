@@ -55,8 +55,7 @@ If None assumes all are numeric, by default None.</p></li>
 <dd class="field-even"><p><em>numpy.ndarray</em> – Pair-wise distance matrix of dimensions (observations, observations).
 Currently does not set distance for missing values to 0 as per paper.
 TODO: handle missing values
-Currently if only one target is given, all categorical distances are 0.
-TODO: handle only one class with <span class="math notranslate nohighlight">\(\sum_{a=1}^{A} \left | P_{x,a} - P_{y,a} \right |^2\)</span></p>
+If only one target is given, all categorical distances are 0. See Notes for more information.</p>
 </dd>
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><p><strong>ValueError</strong> – Raised when splitting X into two matrices (one for continuous and categorical each) fails.</p>
@@ -81,6 +80,11 @@ TODO: handle only one class with <span class="math notranslate nohighlight">\(\s
 &amp;= \sqrt {\sum_{c=1}^{C} \left | \frac {N_{b,x,c}} {N_{b,x}} - \frac {N_{b,y,c}} {N_{b,y}}   \right | ^2 } ^2\end{split}\]</div>
 <p>where <cite>C</cite> is the list of classes or targets.
 Implemented in <a class="reference internal" href="smote_likes.distance_metrics.normalized_vdm_2.html#smote_likes.distance_metrics.normalized_vdm_2" title="smote_likes.distance_metrics.normalized_vdm_2"><code class="xref py py-func docutils literal notranslate"><span class="pre">smote_likes.distance_metrics.normalized_vdm_2()</span></code></a></p>
+<p>Note: If only one target is given, all categorical distances are 0 because any <span class="math notranslate nohighlight">\(\frac {N_{b,x,c}} {N_{b,x}} = 1\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\sum_{a=1}^{A} \left | P_{x,a} - P_{y,a} \right | ^2 = \\
+\sqrt {\sum_{c=1}^{C} \left | \frac {N_{b,x,c}} {N_{b,x}} - \frac {N_{b,y,c}} {N_{b,y}}   \right | ^2 } ^2 = \\
+\sqrt {\sum_{}^{1} \left | 1 - 1 \right | ^2 } ^2\end{split}\]</div>
 </dd></dl>
 
 </div>
