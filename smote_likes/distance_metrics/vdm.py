@@ -5,8 +5,8 @@
 
 import numpy
 
-from .nvdm2 import normalized_vdm_2
 from .continuous import discretize_columns, normalized_diff
+from .nvdm2 import normalized_vdm_2
 
 
 def hvdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None):

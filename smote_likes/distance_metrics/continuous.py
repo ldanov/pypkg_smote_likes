@@ -40,9 +40,9 @@ def discretize_columns(X, s) -> numpy.ndarray:
     if not isinstance(s, int):
         t = type(s)
         raise ValueError("s needs to be int, but is {}".format(t))
-    if not s>0:
+    if not s > 0:
         raise ValueError("s needs to be larger than 0, but is {}".format(s))
-    
+
     widths = _get_all_interval_widths(X, s)
     all_cols = []
     for col in range(X.shape[1]):
@@ -85,7 +85,7 @@ def normalized_diff(X: numpy.ndarray) -> numpy.ndarray:
     """
     x_num_sd = numpy.std(X, axis=0, keepdims=True)
     dispersion = numpy.where(x_num_sd == 0, 1, 4*x_num_sd)
-    
+
     x_num_normalzied = numpy.divide(X, dispersion)
     x_num_dist = euclidean_distances(
         X=x_num_normalzied,
