@@ -1,7 +1,7 @@
 import numpy
 from sklearn.datasets import load_breast_cancer
 
-from ..nvdm2 import get_cond_probas, normalized_vdm_2, nvdm2
+from ..categorical import get_cond_probas, normalized_vdm_2, nvdm2
 from .test_helper import _generate_cats
 
 

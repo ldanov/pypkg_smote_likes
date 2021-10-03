@@ -5,8 +5,8 @@
 
 import numpy
 
+from .categorical import normalized_vdm_2
 from .continuous import discretize_columns, normalized_diff
-from .nvdm2 import normalized_vdm_2
 
 
 def hvdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None):
@@ -150,8 +150,6 @@ def dvdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None, use_s: i
 
     where `C` is the list of classes or targets.
     Implemented in :py:func:`smote_likes.distance_metrics.normalized_vdm_2`
-
-
 
     """
     if ind_cat_cols is None:
