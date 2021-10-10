@@ -91,7 +91,7 @@ napoleon_use_rtype = False
 # autodoc_default_options = {'members': False}
 
 # Automodapi
-numpydoc_show_class_members = True
+numpydoc_show_class_members = False
 
 # automodapi_toctreedirnm = '.\_templates'
 # -- Options for todo extension ----------------------------------------------

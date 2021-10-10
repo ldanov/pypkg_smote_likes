@@ -40,7 +40,47 @@
 <dl class="py function">
 <dt id="smote_likes.distance_metrics.ivdm">
 <code class="sig-prename descclassname">smote_likes.distance_metrics.</code><code class="sig-name descname">ivdm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">y</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">ind_cat_cols</span><span class="p">:</span> <span class="n">list</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">use_s</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="../_modules/smote_likes/distance_metrics/vdm.html#ivdm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#smote_likes.distance_metrics.ivdm" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Computes IVDM distance metric with normalized_vdm_2 for categorical data
+and interpolated_vdm for numeric.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – Feature matrix with dimensions (observations, features).</p></li>
+<li><p><strong>y</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – Target class for each row in X.</p></li>
+<li><p><strong>ind_cat_cols</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>, <em>optional</em>) – List of indices of categorical columns.
+If None assumes all are numeric, by default None.</p></li>
+<li><p><strong>use_s</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <em>optional</em>) – Number of discrete groups to be created for all continuous features.
+If None s will be the larger of 5 and number of classes in y. By default None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>numpy.ndarray</em> – Pair-wise distance matrix of dimensions (observations, observations).</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – Raised when splitting X into two matrices (one for continuous and categorical each) fails.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Interpolated Value Difference Metric (IVDM) see pp. 17 (eq. 22-24) <span id="id1">Wilson and Martinez [<a class="reference internal" href="../smote_likes.html#id3">WM97</a>]</span></p>
+<div class="math notranslate nohighlight">
+\[\begin{split}ivdm(x,y)  \\
+&amp;= \sqrt { \sum_{f=1} ^ {F} d_{f}^2(x, y) } \\
+&amp;= \sqrt {\sum_{a=1} ^ {num} d_{a}^2(x, y) + \sum_{b=1} ^ {cat} d_{b}^2(x, y)}\end{split}\]</div>
+<p>where <cite>num</cite> is the list of continuous attributes, <cite>cat</cite> is the list of categorical ones and
+<cite>F</cite> is the list of all attributes or features.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}d_{a}^2(x, y) \\
+&amp;= interpolated\_diff_a{^2}(x, y) \\
+&amp;= \sum_{c=1}^{C} \left | p_{a,c}(x) - p_{a,c}(y) \right | ^2\end{split}\]</div>
+<p>Implemented in <a class="reference internal" href="smote_likes.distance_metrics.interpolated_vdm.html#smote_likes.distance_metrics.interpolated_vdm" title="smote_likes.distance_metrics.interpolated_vdm"><code class="xref py py-func docutils literal notranslate"><span class="pre">smote_likes.distance_metrics.interpolated_vdm()</span></code></a>.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}d_{b}^2(x, y) \\
+&amp;= normalized\_vdm_b{^2}(x, y) \\
+&amp;= \sqrt {\sum_{c=1}^{C} \left | \frac {N_{b,x,c}} {N_{b,x}} - \frac {N_{b,y,c}} {N_{b,y}}   \right | ^2 } ^2\end{split}\]</div>
+<p>where <cite>C</cite> is the list of classes or targets.
+Implemented in <a class="reference internal" href="smote_likes.distance_metrics.normalized_vdm_2.html#smote_likes.distance_metrics.normalized_vdm_2" title="smote_likes.distance_metrics.normalized_vdm_2"><code class="xref py py-func docutils literal notranslate"><span class="pre">smote_likes.distance_metrics.normalized_vdm_2()</span></code></a>.</p>
+<p>Note: If only one target is given, all categorical distances are 0 because any <span class="math notranslate nohighlight">\(\frac {N_{b,x,c}} {N_{b,x}} = 1\)</span>.</p>
+</dd></dl>
 
 </div>
 
@@ -65,9 +105,8 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../readme.html">README</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../smote_likes.html">smote_likes Description</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../smote_likes.html#functions">Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../smote_likes.html#classes">Classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../smote_likes.html#id1">Classes</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../smote_likes.html#module-smote_likes.distance_metrics">smote_likes.distance_metrics Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../smote_likes.html#module-smote_likes.synth_generator">smote_likes.synth_generator Package</a></li>
 </ul>
 </li>
 </ul>
