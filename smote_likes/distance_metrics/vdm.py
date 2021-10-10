@@ -9,7 +9,7 @@ from .categorical import normalized_vdm_2
 from .continuous import discretize_columns, normalized_diff, interpolated_vdm
 
 
-def hvdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None):
+def hvdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None) -> numpy.ndarray:
     r"""Computes HVDM distance metric with normalized_vdm_2 for categorical data
     and normalized_diff for numeric.
 
@@ -103,7 +103,7 @@ def hvdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None):
     return x_dist
 
 
-def dvdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None, use_s: int = None):
+def dvdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None, use_s: int = None) -> numpy.ndarray:
     r"""Computes DVDM distance metric with normalized_vdm2 
     for all data after discretizing continuous data.
 
@@ -183,7 +183,7 @@ def dvdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None, use_s: i
     return x_dist
 
 
-def ivdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None, use_s: int = None):
+def ivdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None, use_s: int = None) -> numpy.ndarray:
     # TODO: tests
     # TODO: documentation
 
