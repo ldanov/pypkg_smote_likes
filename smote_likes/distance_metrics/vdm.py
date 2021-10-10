@@ -211,7 +211,7 @@ def ivdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None, use_s: i
     else:
         s = max(5, (numpy.unique(y)).shape[0]
                 ) if use_s is None else use_s
-        x_num_dist = interpolated_vdm(X=X, y=y, use_s = s)
+        x_num_dist = interpolated_vdm(X=X, y=y, use_s=s)
 
     x_dist = numpy.sqrt(x_num_dist + x_cat_dist)
     return x_dist
