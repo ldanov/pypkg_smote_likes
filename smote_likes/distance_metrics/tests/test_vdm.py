@@ -72,3 +72,6 @@ def test_compare_categorical():
 
     # Then
     assert numpy.allclose(res_dvdm, res_hvdm)
+
+# TODO: test dvdm with input from Table 4 (pp.16) from Wilson1997
+# TODO: test ivdm with input from Table 5 (pp.18) from Wilson1997

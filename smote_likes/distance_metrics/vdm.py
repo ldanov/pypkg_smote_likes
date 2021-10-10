@@ -6,7 +6,7 @@
 import numpy
 
 from .categorical import normalized_vdm_2
-from .continuous import discretize_columns, normalized_diff
+from .continuous import discretize_columns, normalized_diff, interpolated_vdm
 
 
 def hvdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None):
@@ -178,6 +178,40 @@ def dvdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None, use_s: i
         x_cat_dist = numpy.zeros(shape=(n_obs, n_obs))
     else:
         x_cat_dist = normalized_vdm_2(X=x_cat, y=y)
+
+    x_dist = numpy.sqrt(x_num_dist + x_cat_dist)
+    return x_dist
+
+
+def ivdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None, use_s: int = None):
+    # TODO: tests
+    # TODO: documentation
+
+    if ind_cat_cols is None:
+        ind_cat_cols = []
+
+    n_obs = X.shape[0]
+
+    if y is None:
+        y = numpy.ones(shape=(n_obs,))
+
+    x_num, x_cat = _split_arrays(X, ind_cat_cols)
+
+    if x_num.size == 0 and x_cat.size == 0:
+        raise ValueError("Splitting X into continuous \
+            and discrete returned empty arrays.")
+
+    if x_cat.size == 0:
+        x_cat_dist = numpy.zeros(shape=(n_obs, n_obs))
+    else:
+        x_cat_dist = normalized_vdm_2(X=x_cat, y=y)
+
+    if x_num.size == 0:
+        x_num_dist = numpy.zeros(shape=(n_obs, n_obs))
+    else:
+        s = max(5, (numpy.unique(y)).shape[0]
+                ) if use_s is None else use_s
+        x_num_dist = interpolated_vdm(X=X, y=y, use_s = s)
 
     x_dist = numpy.sqrt(x_num_dist + x_cat_dist)
     return x_dist
