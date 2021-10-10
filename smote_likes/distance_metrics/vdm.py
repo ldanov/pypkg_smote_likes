@@ -68,12 +68,6 @@ def hvdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None) -> numpy
 
     Note: If only one target is given, all categorical distances are 0 because any :math:`\frac {N_{b,x,c}} {N_{b,x}} = 1`. 
 
-    .. math:: 
-
-        \sum_{a=1}^{A} \left | P_{x,a} - P_{y,a} \right | ^2 = \\
-        \sqrt {\sum_{c=1}^{C} \left | \frac {N_{b,x,c}} {N_{b,x}} - \frac {N_{b,y,c}} {N_{b,y}}   \right | ^2 } ^2 = \\
-        \sqrt {\sum_{}^{1} \left | 1 - 1 \right | ^2 } ^2
-
     """
     # TODO: handle missing values in x_num or x_cat
     if ind_cat_cols is None:
@@ -119,7 +113,7 @@ def dvdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None, use_s: i
         If None assumes all are numeric, by default None.
     use_s: int, optional
         Number of discrete groups to be created for all continuous features.
-        If none s will be the larger of 5 and number of classes in y. By default None.
+        If None s will be the larger of 5 and number of classes in y. By default None.
 
     Returns
     -------
@@ -185,7 +179,65 @@ def dvdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None, use_s: i
 
 
 def ivdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None, use_s: int = None) -> numpy.ndarray:
-    # TODO: tests
+    r"""Computes IVDM distance metric with normalized_vdm_2 for categorical data
+    and interpolated_vdm for numeric.
+
+    Parameters
+    ----------
+    X : numpy.ndarray
+        Feature matrix with dimensions (observations, features).
+    y : numpy.ndarray
+        Target class for each row in X.
+    ind_cat_cols : list, optional
+        List of indices of categorical columns.
+        If None assumes all are numeric, by default None.
+    use_s: int, optional
+        Number of discrete groups to be created for all continuous features.
+        If None s will be the larger of 5 and number of classes in y. By default None.
+
+    Returns
+    -------
+    numpy.ndarray
+        Pair-wise distance matrix of dimensions (observations, observations).
+
+    Raises
+    ------
+    ValueError
+        Raised when splitting X into two matrices (one for continuous and categorical each) fails.
+
+    Notes
+    -----
+    Interpolated Value Difference Metric (IVDM) see pp. 17 (eq. 22-24) :cite:t:`Wilson1997`
+
+    .. math:: 
+
+        ivdm(x,y)  \\
+        &= \sqrt { \sum_{f=1} ^ {F} d_{f}^2(x, y) } \\
+        &= \sqrt {\sum_{a=1} ^ {num} d_{a}^2(x, y) + \sum_{b=1} ^ {cat} d_{b}^2(x, y)}  
+
+    where `num` is the list of continuous attributes, `cat` is the list of categorical ones and
+    `F` is the list of all attributes or features.
+
+    .. math::
+
+        d_{a}^2(x, y) \\
+        &= interpolated\_diff_a{^2}(x, y) \\
+        &= \sum_{c=1}^{C} \left | p_{a,c}(x) - p_{a,c}(y) \right | ^2
+
+    Implemented in :py:func:`smote_likes.distance_metrics.interpolated_vdm`.
+
+    .. math:: 
+
+        d_{b}^2(x, y) \\
+        &= normalized\_vdm_b{^2}(x, y) \\
+        &= \sqrt {\sum_{c=1}^{C} \left | \frac {N_{b,x,c}} {N_{b,x}} - \frac {N_{b,y,c}} {N_{b,y}}   \right | ^2 } ^2
+
+    where `C` is the list of classes or targets.
+    Implemented in :py:func:`smote_likes.distance_metrics.normalized_vdm_2`.
+
+    Note: If only one target is given, all categorical distances are 0 because any :math:`\frac {N_{b,x,c}} {N_{b,x}} = 1`. 
+
+    """
     # TODO: documentation
 
     if ind_cat_cols is None:

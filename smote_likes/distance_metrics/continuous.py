@@ -68,8 +68,6 @@ def interpolated_vdm(X: numpy.ndarray, y: numpy.ndarray, s: int) -> numpy.ndarra
     Note3: If :math:`x < mid_{a,u}` then :math:`u_{x} = u_{x} - 1`
 
     """
-    # TODO: tests
-
     # The value of u is found by first setting u = discretize_{a}(x), and then
     # subtracting 1 from u if x < mid_{a,u}
     # Condition is enforced to guarantee that following holds for further calculation:
