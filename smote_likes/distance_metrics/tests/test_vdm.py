@@ -1,7 +1,7 @@
 import numpy
 
 from ..vdm import dvdm, hvdm, ivdm
-from .test_helpers import _get_test_data_mixed
+from .test_data import _get_test_data_mixed
 
 
 def test_hvdm():

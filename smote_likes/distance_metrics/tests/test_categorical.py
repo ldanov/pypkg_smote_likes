@@ -1,14 +1,7 @@
 import numpy
-from sklearn.datasets import load_breast_cancer
 
 from ..categorical import get_cond_probas, normalized_vdm_2, nvdm2
-from .test_helper import _generate_cats
-
-
-def _get_test_data_cats():
-    X, y = load_breast_cancer(return_X_y=True)
-    cat_vars = _generate_cats(X, 5)
-    return cat_vars, y
+from .test_data import _get_test_data_cats
 
 
 def test_nvdm2():
