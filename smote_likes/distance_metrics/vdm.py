@@ -6,7 +6,8 @@
 import numpy
 
 from .categorical import normalized_vdm_2
-from .continuous import discretize_columns, normalized_diff, interpolated_vdm
+from .continuous import discretize_columns, interpolated_vdm, normalized_diff
+from .helpers import _split_arrays
 
 
 def hvdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None) -> numpy.ndarray:
@@ -211,16 +212,7 @@ def ivdm(X: numpy.ndarray, y: numpy.ndarray, ind_cat_cols: list = None, use_s: i
     else:
         s = max(5, (numpy.unique(y)).shape[0]
                 ) if use_s is None else use_s
-        x_num_dist = interpolated_vdm(X=X, y=y, use_s=s)
+        x_num_dist = interpolated_vdm(X=X, y=y, s=s)
 
     x_dist = numpy.sqrt(x_num_dist + x_cat_dist)
     return x_dist
-
-
-def _split_arrays(arr, ind_cat_cols):
-    ind_num_cols = [i for i in range(arr.shape[1]) if i not in ind_cat_cols]
-
-    arr_cat = arr[:, ind_cat_cols]
-    arr_num = arr[:, ind_num_cols]
-
-    return arr_num, arr_cat
