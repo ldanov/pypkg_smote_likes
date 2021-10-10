@@ -256,7 +256,9 @@ def _permutation_dict(keys0: list, keys1: list, value) -> dict:
 
 
 def _remap_ndarray_dict(X, mapping):
-    new_X = numpy.ndarray(X.shape)
+    """ Values that are not part of mapping are set to 0.
+    """
+    new_X = numpy.zeros(X.shape)
     for key, value in mapping.items():
         new_X[X == key] = value
     return new_X
