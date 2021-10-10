@@ -7,7 +7,10 @@ import numpy
 from sklearn.metrics import euclidean_distances
 
 from .categorical import get_cond_probas
-from .helpers import ShapeError, _remap_ndarray_dict
+from .helpers import (ShapeError, _discretize_column, _get_all_interval_widths,
+                      _get_interpolated_location,
+                      _get_interpolated_probability, _remap_ndarray_dict,
+                      _update_x_range)
 
 
 def interpolated_vdm(X: numpy.ndarray, y: numpy.ndarray, s: int) -> numpy.ndarray:
@@ -200,60 +203,3 @@ def normalized_diff(X: numpy.ndarray) -> numpy.ndarray:
         squared=True
     )
     return x_num_dist
-
-
-def _generate_interval_width(a, s):
-    """ See pp 14 from Wilson, eq. (17), eq. (18)
-    """
-    max_a = numpy.max(a)
-    min_a = numpy.min(a)
-    w_a = numpy.abs(numpy.max(a) - numpy.min(a)) / s
-    return (w_a, max_a, min_a)
-
-
-def _get_all_interval_widths(X, s):
-    """ Apply _generate_interval_width over all columns of X
-    """
-    return numpy.apply_along_axis(_generate_interval_width, 0, X, s=s)
-
-
-def _discretize_column(x, s, w_a, max_a, min_a):
-    """ See pp 14 from Wilson, eq. (18)
-    """
-    return numpy.where(x == max_a, s, numpy.floor((x-min_a)/w_a)+1)
-
-
-def _get_interpolated_probability(P_Xu0c, P_Xu1c, z_X):
-    """ See pp 17 from Wilson, eq. (23)
-    """
-    return P_Xu0c + numpy.multiply((P_Xu1c - P_Xu0c), z_X)
-
-
-def _get_interpolated_location(x_a, u_xa, w_a, min_a):
-    """ See pp 17 from Wilson, eq. (23), eq. (24)
-    (x - mid_{a,u}) / (mid_{a,u+1} - mid_{a,u}) =
-    (x - min_{a} - width_{a}*(u+0.5)) / (width_{a}*(u + 1.5 - u - 0.5)) =
-    (x - min_{a} - width_{a}*(u+0.5)) / width_{a}*1 = 
-    ((x - min_{a}) / width_{a}) - (u+0.5)
-    """
-    return ((x_a - min_a) / w_a) - (u_xa + 0.5)
-
-
-def _mid_au(X_a, w_a, min_a) -> numpy.ndarray:
-    """ See pp 17 from Wilson, eq. (24)
-    """
-    return (X_a + 0.5) * w_a + min_a
-
-
-def _update_x_range(X_discrete, widths):
-    """ See pp 17 from Wilson, eq. (24)
-    "The value of u is found by first setting u = discretize_{a}(x), and then
-    subtracting 1 from u if x < mid_{a,u}."
-    """
-    all_cols = []
-    for col in range(X_discrete.shape[1]):
-        z = _mid_au(X_discrete[:, col], widths[0, col], widths[2, col])
-        all_cols.append(z)
-    X_mids = numpy.stack(all_cols, 1)
-    assert X_mids.shape == X_discrete.shape
-    return numpy.where(X_discrete < X_mids, X_discrete - 1, X_discrete)
