@@ -42,8 +42,119 @@
 <span class="kn">import</span> <span class="nn">numpy</span>
 <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">euclidean_distances</span>
 
+<span class="kn">from</span> <span class="nn">.categorical</span> <span class="kn">import</span> <span class="n">get_cond_probas</span>
+<span class="kn">from</span> <span class="nn">.helpers</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ShapeError</span><span class="p">,</span> <span class="n">_discretize_column</span><span class="p">,</span> <span class="n">_get_all_interval_widths</span><span class="p">,</span>
+                      <span class="n">_get_interpolated_location</span><span class="p">,</span>
+                      <span class="n">_get_interpolated_probability</span><span class="p">,</span> <span class="n">_remap_ndarray_dict</span><span class="p">,</span>
+                      <span class="n">_update_x_range</span><span class="p">)</span>
 
-<div class="viewcode-block" id="discretize_columns"><a class="viewcode-back" href="../../../api/smote_likes.distance_metrics.discretize_columns.html#smote_likes.distance_metrics.discretize_columns">[docs]</a><span class="k">def</span> <span class="nf">discretize_columns</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+
+<div class="viewcode-block" id="interpolated_vdm"><a class="viewcode-back" href="../../../api/smote_likes.distance_metrics.interpolated_vdm.html#smote_likes.distance_metrics.interpolated_vdm">[docs]</a><span class="k">def</span> <span class="nf">interpolated_vdm</span><span class="p">(</span><span class="n">X</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Computes Interpolated Value Difference Metric</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X : numpy.ndarray</span>
+<span class="sd">        Feature matrix with only categorical features with dimensions (observations, features).</span>
+<span class="sd">    y : numpy.ndarray</span>
+<span class="sd">        Target class for each row in X.</span>
+<span class="sd">    s : int</span>
+<span class="sd">        Number of categories to group all elements of a feature into.</span>
+<span class="sd">        Needs to be larger than 0.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    numpy.ndarray</span>
+<span class="sd">        A distance array of size (observations, observations) with all</span>
+<span class="sd">        pairwise distances between observations. See notes for returned</span>
+<span class="sd">        value.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The distance matrix returned corresponds to the categorical part of equation 22 </span>
+<span class="sd">    from :cite:t:`Wilson1997`:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        interpolated\_vdm(x, y) \\</span>
+<span class="sd">        &amp;= \sum_{b=1}^{cat} \sum_{c=1}^{C} \left | p_{b,c}(x) - p_{b,c}(y) \right | ^2</span>
+
+<span class="sd">    where C is the list of classes and cat is the list of </span>
+<span class="sd">    categorical attributes. </span>
+
+<span class="sd">    The interpolated probability value :math:`p_{a,c}(x)` is taken from equation 23 from :cite:t:`Wilson1997`.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        p_{a,c}(x) &amp;= P_{a,u,c} + z(x) * (P_{a,u+1,c} - P_{a,u,c}) \\</span>
+<span class="sd">        z(x) &amp;= \left ( \frac {x - mid_{a, u}} {mid_{a, u+1} - mid_{a, u}} \right) \\</span>
+<span class="sd">        mid_{a, u} &amp;= min_a + width_a * (u + 0.5)</span>
+
+<span class="sd">    where:  </span>
+
+<span class="sd">    - u is the range in which a discretized x falls (see :py:func:`smote_likes.distance_metrics.discretize_columns`)</span>
+<span class="sd">    - a is the attribute and c is the class. </span>
+
+<span class="sd">    Note1: The algorithm expects that all attributes of X are categorical features</span>
+<span class="sd">    encoded as numeric.</span>
+
+<span class="sd">    Note2: The returned distance matrix can be summed element-wise </span>
+<span class="sd">    with the distance matrices generated by other types of attributes.</span>
+
+<span class="sd">    Note3: If :math:`x &lt; mid_{a,u}` then :math:`u_{x} = u_{x} - 1`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># TODO: tests</span>
+
+    <span class="c1"># The value of u is found by first setting u = discretize_{a}(x), and then</span>
+    <span class="c1"># subtracting 1 from u if x &lt; mid_{a,u}</span>
+    <span class="c1"># Condition is enforced to guarantee that following holds for further calculation:</span>
+    <span class="c1"># mid_{a, u} &lt;= x &lt;= mid_{a, u+1}</span>
+
+    <span class="c1"># calculate the initial ranges of each entry and the range widths</span>
+    <span class="n">X_discrete_init</span> <span class="o">=</span> <span class="n">discretize_columns</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+    <span class="n">widths</span> <span class="o">=</span> <span class="n">_get_all_interval_widths</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+    <span class="c1"># calculate the mid points of each range</span>
+    <span class="c1"># update the range of each entry if condition</span>
+    <span class="n">X_discrete</span> <span class="o">=</span> <span class="n">_update_x_range</span><span class="p">(</span><span class="n">X_discrete_init</span><span class="p">,</span> <span class="n">widths</span><span class="p">)</span>
+
+    <span class="n">cond_proba_list</span> <span class="o">=</span> <span class="n">get_cond_probas</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X_discrete</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">unique_targets</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="c1"># get class conditional for each a,u,c</span>
+    <span class="c1"># for each class</span>
+    <span class="c1"># generate matrix of size X P_a,u,c</span>
+    <span class="c1"># generate matrix of size X P_a,u+1,c</span>
+    <span class="c1"># generate matrix of size X z(x)</span>
+    <span class="c1"># calculate matrix p_a,c(x)</span>
+    <span class="c1"># get euclidean_distance</span>
+
+    <span class="n">list_pdist_per_class</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">trgt</span> <span class="ow">in</span> <span class="n">unique_targets</span><span class="p">:</span>
+        <span class="n">X_p_c_all</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X_discrete</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">z_a</span> <span class="o">=</span> <span class="n">_get_interpolated_location</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="n">col</span><span class="p">],</span>
+                                             <span class="n">X_discrete</span><span class="p">[:,</span> <span class="n">col</span><span class="p">],</span>
+                                             <span class="n">widths</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">col</span><span class="p">],</span>
+                                             <span class="n">widths</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="n">col</span><span class="p">])</span>
+            <span class="n">P_a_u0_c</span> <span class="o">=</span> <span class="n">_remap_ndarray_dict</span><span class="p">(</span><span class="n">X_discrete</span><span class="p">[:,</span> <span class="n">col</span><span class="p">],</span>
+                                           <span class="n">cond_proba_list</span><span class="p">[</span><span class="n">col</span><span class="p">][</span><span class="n">trgt</span><span class="p">])</span>
+            <span class="n">P_a_u1_c</span> <span class="o">=</span> <span class="n">_remap_ndarray_dict</span><span class="p">(</span><span class="n">X_discrete</span><span class="p">[:,</span> <span class="n">col</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                                           <span class="n">cond_proba_list</span><span class="p">[</span><span class="n">col</span><span class="p">][</span><span class="n">trgt</span><span class="p">])</span>
+            <span class="n">X_a_p_c</span> <span class="o">=</span> <span class="n">_get_interpolated_probability</span><span class="p">(</span><span class="n">P_a_u0_c</span><span class="p">,</span> <span class="n">P_a_u1_c</span><span class="p">,</span> <span class="n">z_a</span><span class="p">)</span>
+            <span class="n">X_a_p_c</span> <span class="o">=</span> <span class="n">X_a_p_c</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">X_p_c_all</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">X_a_p_c</span><span class="p">)</span>
+        <span class="n">X_p_c</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">X_p_c_all</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">X_p_c</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ShapeError</span><span class="p">(</span><span class="s2">&quot;Internal transformation led to object malformation. </span><span class="se">\</span>
+<span class="s2">                Original shape: </span><span class="si">{}</span><span class="s2">, current shape: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">X_discrete</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">X_p_c</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+        <span class="c1">#  squared euclidean distance</span>
+        <span class="n">pdist_c</span> <span class="o">=</span> <span class="n">euclidean_distances</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X_p_c</span><span class="p">,</span> <span class="n">squared</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">list_pdist_per_class</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pdist_c</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">list_pdist_per_class</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="discretize_columns"><a class="viewcode-back" href="../../../api/smote_likes.distance_metrics.discretize_columns.html#smote_likes.distance_metrics.discretize_columns">[docs]</a><span class="k">def</span> <span class="nf">discretize_columns</span><span class="p">(</span><span class="n">X</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Transform a matrix of continuous into discrete features.</span>
 
 <span class="sd">    Parameters</span>
@@ -128,25 +239,6 @@
         <span class="n">squared</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">x_num_dist</span></div>
-
-
-<span class="k">def</span> <span class="nf">_generate_interval_width</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; See pp 14 from Wilson, eq. (17), eq. (18)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">max_a</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">min_a</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">w_a</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">-</span> <span class="n">numpy</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">a</span><span class="p">))</span> <span class="o">/</span> <span class="n">s</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">w_a</span><span class="p">,</span> <span class="n">max_a</span><span class="p">,</span> <span class="n">min_a</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">_get_all_interval_widths</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">apply_along_axis</span><span class="p">(</span><span class="n">_generate_interval_width</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">_discretize_column</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">w_a</span><span class="p">,</span> <span class="n">max_a</span><span class="p">,</span> <span class="n">min_a</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; See pp 14 from Wilson, eq. (17), eq. (18)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="n">max_a</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">floor</span><span class="p">((</span><span class="n">x</span><span class="o">-</span><span class="n">min_a</span><span class="p">)</span><span class="o">/</span><span class="n">w_a</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 
           </div>

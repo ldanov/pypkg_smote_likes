@@ -41,11 +41,12 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span>
 
-<span class="kn">from</span> <span class="nn">.continuous</span> <span class="kn">import</span> <span class="n">discretize_columns</span><span class="p">,</span> <span class="n">normalized_diff</span>
-<span class="kn">from</span> <span class="nn">.nvdm2</span> <span class="kn">import</span> <span class="n">normalized_vdm_2</span>
+<span class="kn">from</span> <span class="nn">.categorical</span> <span class="kn">import</span> <span class="n">normalized_vdm_2</span>
+<span class="kn">from</span> <span class="nn">.continuous</span> <span class="kn">import</span> <span class="n">discretize_columns</span><span class="p">,</span> <span class="n">interpolated_vdm</span><span class="p">,</span> <span class="n">normalized_diff</span>
+<span class="kn">from</span> <span class="nn">.helpers</span> <span class="kn">import</span> <span class="n">_split_arrays</span>
 
 
-<div class="viewcode-block" id="hvdm"><a class="viewcode-back" href="../../../api/smote_likes.distance_metrics.hvdm.html#smote_likes.distance_metrics.hvdm">[docs]</a><span class="k">def</span> <span class="nf">hvdm</span><span class="p">(</span><span class="n">X</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">ind_cat_cols</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="hvdm"><a class="viewcode-back" href="../../../api/smote_likes.distance_metrics.hvdm.html#smote_likes.distance_metrics.hvdm">[docs]</a><span class="k">def</span> <span class="nf">hvdm</span><span class="p">(</span><span class="n">X</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">ind_cat_cols</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Computes HVDM distance metric with normalized_vdm_2 for categorical data</span>
 <span class="sd">    and normalized_diff for numeric.</span>
 
@@ -139,7 +140,7 @@
     <span class="k">return</span> <span class="n">x_dist</span></div>
 
 
-<div class="viewcode-block" id="dvdm"><a class="viewcode-back" href="../../../api/smote_likes.distance_metrics.dvdm.html#smote_likes.distance_metrics.dvdm">[docs]</a><span class="k">def</span> <span class="nf">dvdm</span><span class="p">(</span><span class="n">X</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">ind_cat_cols</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">use_s</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="dvdm"><a class="viewcode-back" href="../../../api/smote_likes.distance_metrics.dvdm.html#smote_likes.distance_metrics.dvdm">[docs]</a><span class="k">def</span> <span class="nf">dvdm</span><span class="p">(</span><span class="n">X</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">ind_cat_cols</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">use_s</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Computes DVDM distance metric with normalized_vdm2 </span>
 <span class="sd">    for all data after discretizing continuous data.</span>
 
@@ -187,8 +188,6 @@
 <span class="sd">    where `C` is the list of classes or targets.</span>
 <span class="sd">    Implemented in :py:func:`smote_likes.distance_metrics.normalized_vdm_2`</span>
 
-
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">ind_cat_cols</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">ind_cat_cols</span> <span class="o">=</span> <span class="p">[]</span>
@@ -221,13 +220,38 @@
     <span class="k">return</span> <span class="n">x_dist</span></div>
 
 
-<span class="k">def</span> <span class="nf">_split_arrays</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">ind_cat_cols</span><span class="p">):</span>
-    <span class="n">ind_num_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ind_cat_cols</span><span class="p">]</span>
+<div class="viewcode-block" id="ivdm"><a class="viewcode-back" href="../../../api/smote_likes.distance_metrics.ivdm.html#smote_likes.distance_metrics.ivdm">[docs]</a><span class="k">def</span> <span class="nf">ivdm</span><span class="p">(</span><span class="n">X</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">ind_cat_cols</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">use_s</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="c1"># TODO: tests</span>
+    <span class="c1"># TODO: documentation</span>
 
-    <span class="n">arr_cat</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[:,</span> <span class="n">ind_cat_cols</span><span class="p">]</span>
-    <span class="n">arr_num</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[:,</span> <span class="n">ind_num_cols</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">ind_cat_cols</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ind_cat_cols</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">return</span> <span class="n">arr_num</span><span class="p">,</span> <span class="n">arr_cat</span>
+    <span class="n">n_obs</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">y</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n_obs</span><span class="p">,))</span>
+
+    <span class="n">x_num</span><span class="p">,</span> <span class="n">x_cat</span> <span class="o">=</span> <span class="n">_split_arrays</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">ind_cat_cols</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">x_num</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">x_cat</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Splitting X into continuous </span><span class="se">\</span>
+<span class="s2">            and discrete returned empty arrays.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">x_cat</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">x_cat_dist</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n_obs</span><span class="p">,</span> <span class="n">n_obs</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">x_cat_dist</span> <span class="o">=</span> <span class="n">normalized_vdm_2</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">x_cat</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">x_num</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">x_num_dist</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n_obs</span><span class="p">,</span> <span class="n">n_obs</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y</span><span class="p">))</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="p">)</span> <span class="k">if</span> <span class="n">use_s</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">use_s</span>
+        <span class="n">x_num_dist</span> <span class="o">=</span> <span class="n">interpolated_vdm</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">)</span>
+
+    <span class="n">x_dist</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x_num_dist</span> <span class="o">+</span> <span class="n">x_cat_dist</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x_dist</span></div>
 </pre></div>
 
           </div>
